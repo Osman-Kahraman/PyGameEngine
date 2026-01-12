@@ -1,0 +1,8 @@
+- Oyunları açmaya yarayacak olan ana_ekran.py (başlangıç ekranı) eklendi. 
+- Platformları silme özelliği eklendi. 
+- "NameError: name 'fare_poz' is not defined" hatası giderildi. 
+- Önceden yazılmış kodlara biraz daha esneklik getirildi. 
+- Yeni pencere görsel çeşitleri eklendi. 
+- Yazı sistemi eklendi. 
+- Yazı sisteminde font çeşitleri eklendi.
+- Gereksiz uzun kodlar kısaltıldı veya kaldırıldı. 
