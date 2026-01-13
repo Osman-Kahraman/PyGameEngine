@@ -19,21 +19,12 @@ This repository also serves as a long-term reference for game engine design deci
 
 ## Requirements
 
-You will need a **custom domain**.  
-SendGrid Inbound Parse **does not work with free email providers**.  
-
-I personally bought one from **Namecheap for about $2/year**.
-
-You also need a SendGrid account with:
-
-- Inbound Parse enabled  
-- Domain authentication completed  
-- MX records pointing to SendGrid  
-
-Additionally:
-
-- Python 3.9+  
-- Flask  
+| Library     | Version |
+| ----------- | ------- |
+| `pygame`    | 2.6.1   |
+| `Pillow`    | 10.4.0  |
+| `PyQt5`     | 5.15.11 |
+| `repackage` | 0.7.3   |
 
 ---
 
