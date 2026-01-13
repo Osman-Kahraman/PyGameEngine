@@ -212,7 +212,8 @@ class Window:
             converted = tuple((coords + np.array(Camera.coords) * self.win_scale) // self.win_scale)
         else:
             converted = tuple((coords + np.array(Camera.coords) * self.win_scale // self.tile_dict[self.layer]["parallax"]) // self.win_scale)
-            converted = (int(converted[0]), int(converted[1]))
+        
+        converted = (int(converted[0]), int(converted[1]))
 
         return converted
 
