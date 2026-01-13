@@ -324,8 +324,6 @@ Function(s);/
             for item_coords in collision_items.keys():
                 item = collision_items[item_coords]["image"] if "key" in kwds.keys() else collision_items[item_coords]
 
-                mask = pygame.mask.from_surface(item.frame_image) if isinstance(item, Animation) else pygame.mask.from_surface(item)
-
                 size = item.get_size()
 
                 x_bool = x_coor >= item_coords[0] and x_coor < item_coords[0] + size[0]

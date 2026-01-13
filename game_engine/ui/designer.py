@@ -159,7 +159,9 @@ class Window:
                 "left_down": (rect[0] - (self.tile_x_size * self.win_scale), rect[1] + (self.tile_y_size * self.win_scale)) in filteredPolygonRect
             }
             
-            tuned_rect = tuple(np.array(np.array(rect) // self.win_scale) + Camera.coords)
+            x, y = np.array(np.array(rect) // self.win_scale) + Camera.coords
+            tuned_rect = (int(x), int(y))
+            
             tileset = self.tools_dict[self.tileset_choosing.item_coords]
 
             if signs["right"] and signs["left"] and not signs["up"] and signs["down"]:

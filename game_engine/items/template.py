@@ -48,13 +48,13 @@ class Temp:
     def collision(self):
         if self.anim:
             if self.coords[1] <= 1000:
-                result = Physic().collision(self.coords, self.anim.frame_image, self.tiles[5]["layers"], True)
+                result = Physic().collision(self.coords, self.anim.frame_image, self.tiles[5]["layers"], True, "basic")
                 if result:
                     if result.item_collision_coords[1] < result.item_size[1] // 2:
-                        self.coords[1] -= result.item_collision_coords[1] 
+                        self.coords[1] -= result.item_collision_coords[1]
                 else:
                     self.coords[1] += 10
-                result = Physic().collision((self.coords[0], self.coords[1] - 5), self.anim.frame_image, self.tiles[5]["layers"], True)
+                result = Physic().collision((self.coords[0], self.coords[1] - 10), self.anim.frame_image, self.tiles[5]["layers"], True, "basic")
                 if result:
                     if result.item_collision_coords[0] < result.item_size[0] // 2:
                         self.coords[0] -= result.item_collision_coords[0]

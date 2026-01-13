@@ -1,6 +1,7 @@
 # PyGameEngine
 
-**PyGameEngine** is a custom game engine built in **Python**, focusing on **modularity**, **reusability**, and clean architectural design.  
+**PyGameEngine** is a custom game engine built in **Python**, focusing on **modularity**, **reusability**, and clean architectural design. 
+And I want to suffer in PyGame...
 It provides a structured foundation for developing 2D games while keeping core engine logic separate from gameplay rules.
 
 This repository also serves as a long-term reference for game engine design decisions and performance considerations in Python.
@@ -9,11 +10,10 @@ This repository also serves as a long-term reference for game engine design deci
 
 ## Features
 
-- **Modular Architecture** – Engine components are easy to extend and reuse  
-- **Core Game Mechanics** – Physics, event handling, and motor functions  
-- **Structured Gameplay Logic** – Clear separation between engine and game logic  
-- **Efficient Entry Point** – Clean and scalable project initialization  
-- **Built with PyGame** – Uses PyGame for rendering, input, and timing  
+- **Modular Architecture** – Engine components are easy to extend and reuse, such as Animation, Camera, Light, Physic and UI
+- **Core Game Mechanics** – Physics, event handling, and motor functions
+- **Structured Gameplay Logic** – Clear separation between engine and game logic
+- **Built with PyGame** – Uses PyGame for rendering, input, and timing
 
 ---
 
@@ -87,9 +87,3 @@ Run this project using this command:
 ```sh
 python3 game_engine/ui/main.py
 ```
-
----
-
-## License
-
-MIT License
