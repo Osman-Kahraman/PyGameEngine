@@ -45,10 +45,7 @@ pip install -r requirements.txt
 ```
 PyGameEngine/
 ├── game_engine/                # Core game engine package
-│   ├── __pycache__/            # Python bytecode cache
-│   │
 │   ├── items/                  # Game entities & world objects
-│   │   ├── __pycache__/
 │   │   ├── character.py        # Player character logic
 │   │   ├── enemy_1.py          # Enemy behavior & AI
 │   │   ├── streetLight.py      # Environment / static objects
@@ -56,7 +53,6 @@ PyGameEngine/
 │   │   └── info.json           # Item metadata & configuration
 │   │
 │   ├── ui/                     # UI & gameplay flow layer
-│   │   ├── __pycache__/
 │   │   ├── images/             # UI-related assets
 │   │   ├── designer.py         # UI layout & scene composition
 │   │   ├── event.py            # Centralized event handling
@@ -74,7 +70,6 @@ PyGameEngine/
 ├── README.md                   # Project documentation
 ├── requirements.txt            # Python dependencies
 ├── LICENSE                     # MIT License
-└── .gitattributes
 ```
 
 ---
