@@ -478,7 +478,7 @@ Function(s);/
         try:
             return cls.memory[win_name]["condition"]
         except KeyError:
-            return 'win_name "{}" not found'.format(win_name)
+            return f'win_name "{win_name}" not found'
 
     @overload
     def window(self, name: str, coords: tuple or list, size: tuple or list, color: tuple or list) -> pygame.Surface:
