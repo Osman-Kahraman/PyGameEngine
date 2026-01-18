@@ -67,12 +67,16 @@ class Temp:
                     if overlap.height < overlap.width: #y collision
                         if self.velocity_y > 0: # landing
                             self.coords[1] = item_y - self.image_sizes[1]
-                            self.velocity_y = 0
                         elif self.velocity_y < 0: # head hit
                             self.coords[1] = item_y + item_h
-                            self.velocity_y = 0
+                        
+                        self.velocity_y = 0
                     else: #x collision
-                        self.coords[0] -= 1
+                        if self.velocity_x > 0: # left hit
+                            self.coords[0] -= 1
+                        elif self.velocity_x < 0: # right hit
+                            self.coords[0] += 1
+                        
                         self.velocity_x = 0
                 else:
                     self.coords[1] += 10
