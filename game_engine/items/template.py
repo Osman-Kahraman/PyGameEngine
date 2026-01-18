@@ -36,6 +36,11 @@ class Temp:
             self.velocity_x = 0
             self.velocity_y = 0
 
+            self.on_ground = False
+
+            self.GRAVITY = 1.2
+            self.MAX_FALL_SPEED = 18
+
         self.surface = self.image
 
         self.direction = "Left"
@@ -67,6 +72,7 @@ class Temp:
                     if overlap.height < overlap.width: #y collision
                         if self.velocity_y > 0: # landing
                             self.coords[1] = item_y - self.image_sizes[1]
+                            self.on_ground = True
                         elif self.velocity_y < 0: # head hit
                             self.coords[1] = item_y + item_h
                         
@@ -79,7 +85,7 @@ class Temp:
                         
                         self.velocity_x = 0
                 else:
-                    self.coords[1] += 10
+                    self.on_ground = False
             else:
                 self.run = False
                 self.anim = ""
@@ -110,6 +116,13 @@ class Temp:
             #-----------------------------------------------------------------------------------------------------
 
             if self.run:
+                #-Gravity----------------------------------------
+                if not self.on_ground:
+                    self.velocity_y += self.GRAVITY
+                    if self.velocity_y > self.MAX_FALL_SPEED:
+                        self.velocity_y = self.MAX_FALL_SPEED
+                #------------------------------------------------
+
                 #-User Codes--------------------------------------------------------------------------------------
                 func(tiles)
                 #-------------------------------------------------------------------------------------------------

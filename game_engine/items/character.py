@@ -56,8 +56,8 @@ for event in pygame_.event:
             else:
                 if pins.characterSpeed_x == 0:
                     print("Eğilme")
-    elif event.type == 3:
-            pins.characterSpeed_x = 0
+    elif event.type == pygame.KEYUP:
+            self.velocity_x = 0
             self.anim = self.Sabit_Durma
 
     elif event.type == 5:
