@@ -33,6 +33,8 @@ class Temp:
             self.lights = data[self.name]["lights"]
             self.tiles = {}
             self.image = pygame.image.load("images/built_in_images/{}.png".format(self.name)).convert_alpha()
+            self.velocity_x = 0
+            self.velocity_y = 0
 
         self.surface = self.image
 
@@ -48,18 +50,32 @@ class Temp:
     def collision(self):
         if self.anim:
             if self.coords[1] <= 1000:
-                result = Physic().collision(self.coords, self.anim.frame_image, self.tiles[5]["layers"], True, "basic")
+                fixed = dict()
+                for i, j in self.tiles[5]["hitbox"].items():
+                    a = i.strip("()").split(", ")
+                    a = (int(a[0]), int(a[1]))
+                    surface = pygame.Surface((j[0] // 2, j[1] // 2), pygame.SRCALPHA)
+                    surface.fill((255, 255, 255))
+                    fixed.update({a: surface})
+
+                result = Physic().collision([self.coords[0], self.coords[1]], self.anim.frame_image, fixed, True)
                 if result:
-                    if result.item_collision_coords[1] < result.item_size[1] // 2:
-                        self.coords[1] -= result.item_collision_coords[1]
+                    overlap = result.overlap_rect
+                    item_x, item_y = result.item_coords
+                    item_w, item_h = result.item_size
+
+                    if overlap.height < overlap.width: #y collision
+                        if self.velocity_y > 0: # landing
+                            self.coords[1] = item_y - self.image_sizes[1]
+                            self.velocity_y = 0
+                        elif self.velocity_y < 0: # head hit
+                            self.coords[1] = item_y + item_h
+                            self.velocity_y = 0
+                    else: #x collision
+                        self.velocity_x = 0
                 else:
-                    self.coords[1] += 10
-                result = Physic().collision((self.coords[0], self.coords[1] - 10), self.anim.frame_image, self.tiles[5]["layers"], True, "basic")
-                if result:
-                    if result.item_collision_coords[0] < result.item_size[0] // 2:
-                        self.coords[0] -= result.item_collision_coords[0]
-                    else:
-                        self.coords[0] += result.item_size[0] - result.item_collision_coords[0]
+                    pass
+                    #self.coords[1] += 10
             else:
                 self.run = False
                 self.anim = ""

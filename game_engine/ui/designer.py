@@ -13,6 +13,7 @@ class Window:
         self.surface = pygame.Surface(np.array(screen.get_size()) // 2).convert()
         self.tileset_choosing = ""
         self.drag_and_dropping = ""
+        self.is_hitbox_on = False
 
         self.tile_dict_RAW, self.tile_dict = tiles.read(return_dict = "both")
         self.layer_amount = len(self.tile_dict)
@@ -27,6 +28,7 @@ class Window:
 
         self.polygon_rects = []
         self.tileDictLocal = {}
+        self.rects = []
 
         self.win_scale = self.screen.get_size()[0] // self.surface.get_size()[0]
 
@@ -116,6 +118,13 @@ class Window:
                     self.tools_dict.update({(x, y): {"image": img, "dir_name": image_name}})
 
                 self.tools_coords_dict.update({image_name: (x, y)})
+    
+    def save_hitbox_rect(self, rects):
+        x, y, width, height = self.rects[0][0], self.rects[0][1], self.rects[1][0] - self.rects[0][0], self.rects[1][1] - self.rects[0][1]
+        x, y = np.array(np.array([x, y]) // self.win_scale) + Camera.coords
+        tuned_rect = (int(x), int(y))
+
+        self.tile_dict_RAW[str(self.layer)]["hitbox"].update({str(tuned_rect): [width, height]})
 
     def auto_fill(self):
         tileDrawingIMG = pygame.Surface(self.screen.get_size()).convert()
@@ -251,6 +260,7 @@ class Window:
                     UI.listen("animator_play_button") == "waked_up", 
                     UI.listen("animator_pause_button") == "waked_up", 
                     UI.listen("new_layer_button") == "waked_up", 
+                    UI.listen("hit_box_button") == "waked_up",
                     UI.listen("animator_add_button") == "waked_up", 
                     UI.listen("light_editor_open_button") == "waked_up"
                     ]):
@@ -264,6 +274,8 @@ class Window:
                 elif self.polygon_rects: 
                     self.cursor = image_.drawingCursor
                     self.polygon_rects.append(self.cursor_pos)
+                elif self.rects:
+                    self.cursor = image_.drawingCursor
                 else:
                     self.cursor = image_.normalCursor
             elif e_type == pygame.MOUSEBUTTONDOWN:
@@ -275,6 +287,9 @@ class Window:
 
                     if self.tileset_choosing:
                         self.polygon_rects.append(self.cursor_pos)
+                    elif self.is_hitbox_on:
+                        self.rects = []
+                        self.rects.append(self.cursor_pos)
                     else:
                         if cursor_interaction:
                             self.unconverted_objectCoords = cursor_interaction.item_coords
@@ -317,12 +332,17 @@ class Window:
                     self.tile_dict[self.layer]["layers"].update({foo: bar["image"]})
                 elif len(self.polygon_rects) > 2 and self.tileset_choosing:
                     self.auto_fill()
+                elif self.is_hitbox_on and self.rects:
+                    self.rects.append(self.cursor_pos)
+
+                    self.save_hitbox_rect(self.rects)
 
                 self.polygon_rects = []
                 self.drag_and_dropping = ""
                 self.drag_and_dropping_bool = False
         #-------------------------------------------------------------------------------------
 
+        #-Blitting of the Windows-------------------------------------------------------------------------------------------------------------------------
         #-Tile Dictionary Loading-------------------------------------------------------------------------------------------------------------------
         for key in sorted(self.tile_dict.keys()):
             layer_ = self.tile_dict[key]
@@ -349,9 +369,25 @@ class Window:
                         if self.layer == key:
                             if not coords_blit in self.tileDictLocal.keys():
                                 self.tileDictLocal.update({coords_blit: image_blit})
+        
+        for key in sorted(self.tile_dict.keys()):
+            layer_ = self.tile_dict[key]
+
+            if self.is_hitbox_on:
+                for coord, size in layer_["hitbox"].items():
+                    x_coord, y_coord = coord.strip("()").split(", ")
+
+                    if not layer_["parallax"]:
+                        coords_blit = np.array((int(x_coord), int(y_coord))) * self.win_scale - np.array(Camera.coords) * self.win_scale
+                    else:
+                        coords_blit = np.array((int(x_coord), int(y_coord))) * self.win_scale - np.array(Camera.coords) * self.win_scale // layer_["parallax"]
+                    x_coord, y_coord = (int(coords_blit[0]), int(coords_blit[1]))
+
+                    height, width = size
+
+                    pygame.draw.rect(self.screen, (255, 0, 0), (int(x_coord), int(y_coord), height, width))
         #-------------------------------------------------------------------------------------------------------------------------------------------
 
-        #-Blitting of the Windows-------------------------------------------------------------------------------------------------------------------------
         #-Tile Info Window------------------------------------------------------------------------------------------------------
         if self.tile_info_bool:
             info_surf, info_coor = UI.window("info", (self.screen.get_size()[0] - 200, 50), (200, 300), (30, 30, 30), 2)
@@ -404,10 +440,9 @@ Animation Amount: {}""".format(self.objectSize, self.objectCoords, self.objectHe
 
         #-Layers Window--------------------------------------------------------------------------------------------------------------------------------
         layers_surf, layers_coor = UI.window("layers", tuple(np.array(self.screen.get_size()) - 200), (200, 150), (30, 30, 30), 2)
+        UI.window("hit_box_button", (5, 5), (20, 20), (110, 110, 110), "button", win_name = "layers")
         UI.window("new_layer_button", (160, 5), (20, 20), (110, 110, 110), "button", win_name = "layers")
-        UI.add_images({
-                (0, 0): image_.newLayerButton
-            }, "new_layer_button")
+        UI.text("+", 18, (0, 0), (255, 255, 255), "new_layer_button")
         layerTuneCrop = 25
         for i in range(1, self.layer_amount + 1):
             UI.window("layer{}_visibility".format(i), (5, layerTuneCrop), (20, 20), (100, 100, 100), "button", win_name = "layers")
@@ -419,7 +454,7 @@ Animation Amount: {}""".format(self.objectSize, self.objectCoords, self.objectHe
                 (0, 0): image_.layerButtonParallax
                 }, "layer{}_parallax".format(i))
             UI.window("layer{}_button".format(i), (45, layerTuneCrop), (135, 20), (30, 30, 30), "button", win_name = "layers")
-            UI.text("Katman {}".format(i), 13, (5, 0), (170, 170, 170), win_name = "layer{}_button".format(i))
+            UI.text("Layer {}".format(i), 13, (5, 0), (170, 170, 170), win_name = "layer{}_button".format(i))
 
             layerTuneCrop += 21
 
@@ -427,11 +462,13 @@ Animation Amount: {}""".format(self.objectSize, self.objectCoords, self.objectHe
             self.screen.blit(layers_surf, layers_coor)
         except TypeError: #It will trigger when one of the buttons clicked.
             layer = layers_surf.item_coords[1] // 21
-            if layers_surf.item_coords == (160, 5):
+            if layers_surf.item_coords == (5, 5):
+                self.is_hitbox_on = False if self.is_hitbox_on else True
+            elif layers_surf.item_coords == (160, 5):
                 self.layer_amount += 1
 
-                self.tile_dict_RAW.update({str(self.layer_amount): {"layers": {}, "visibility": True, "parallax": 5 - 0.3 * self.layer_amount}})
-                self.tile_dict.update({self.layer_amount: {"layers": {}, "visibility": True, "parallax": 5 - 0.3 * self.layer_amount}})
+                self.tile_dict_RAW.update({str(self.layer_amount): {"layers": {}, "visibility": True, "parallax": 5 - 0.3 * self.layer_amount, "hitbox": {}}})
+                self.tile_dict.update({self.layer_amount: {"layers": {}, "visibility": True, "parallax": 5 - 0.3 * self.layer_amount, "hitbox": {}}})
             elif layers_surf.item_coords[0] == 5: 
                 self.tile_dict_RAW[str(layer)]["visibility"] = not self.tile_dict_RAW[str(layer)]["visibility"]
                 self.tile_dict[layer]["visibility"] = not self.tile_dict[layer]["visibility"]

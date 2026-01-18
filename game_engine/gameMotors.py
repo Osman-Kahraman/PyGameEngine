@@ -284,7 +284,7 @@ Function(s);/
 `throwing`
     """
 
-    Result = namedtuple("Result", "item_collision_coords item_coords item_index item_size")
+    Result = namedtuple("Result", "item_collision_coords item_coords item_index item_size side overlap_rect")
 
     @classmethod
     def collision(cls, coords: tuple or list, image: pygame.image, collision_items: dict, col_ret_in_list: bool = False, *args, **kwds) -> namedtuple:
@@ -319,18 +319,45 @@ Function(s);/
                     result = img_mask.overlap(mask, offset)
 
                 if result:
-                    return cls.Result(result, item_coords, list(collision_items.keys()).index(item_coords), item.get_size())
+                    self_rect = pygame.Rect(x_coor, y_coor, image.get_width(), image.get_height())
+                    item_rect = pygame.Rect(item_coords, item.get_size())
+
+                    overlap = self_rect.clip(item_rect)
+
+                    side = None
+                    if overlap.width < overlap.height:
+                        if self_rect.centerx < item_rect.centerx:
+                            side = "left"
+                        else:
+                            side = "right"
+                    else:
+                        if self_rect.centery < item_rect.centery:
+                            side = "top"
+                        else:
+                            side = "bottom" 
+
+                    return cls.Result(
+                        result,
+                        item_coords,
+                        list(collision_items.keys()).index(item_coords),
+                        item.get_size(),
+                        side,
+                        overlap
+                    )
         else:
             for item_coords in collision_items.keys():
                 item = collision_items[item_coords]["image"] if "key" in kwds.keys() else collision_items[item_coords]
 
-                size = item.get_size()
+                try:
+                    size = item.get_size()
+                except AttributeError:
+                    size = (int(item[0]), int(item[1]))
 
-                x_bool = x_coor >= item_coords[0] and x_coor < item_coords[0] + size[0]
-                y_bool = y_coor >= item_coords[1] and y_coor < item_coords[1] + size[1]
+                x_bool = x_coor >= item_coords[0] and x_coor< item_coords[0] + size[0]
+                y_bool = y_coor >= item_coords[1] and y_coor< item_coords[1] + size[1]
                 if x_bool and y_bool:
                     coords_ = (coords[0] - item_coords[0], y_coor - item_coords[1])
-                    return cls.Result(coords_, item_coords, list(collision_items.keys()).index(item_coords), item.get_size())
+                    return cls.Result(coords_, item_coords, list(collision_items.keys()).index(item_coords), size, "", "")
 
     @overload
     def throwing(self, speed: int or float, velocity: int or float) -> tuple: 
@@ -502,10 +529,10 @@ Function(s);/
         """
 
     @overload
-    def window(cls, name: str, coords: tuple or list, size: tuple or list, color: tuple or list, tip: str = None, text_bool: bool = False, win_name: str = None, min_sizes: tuple or list = None, max_sizes: tuple or list = None) -> pygame.Surface: ...
+    def window(cls, name: str, coords: tuple or list, size: tuple or list, color: tuple or list, type_: str = None, text_bool: bool = False, win_name: str = None, min_sizes: tuple or list = None, max_sizes: tuple or list = None) -> pygame.Surface: ...
 
     @classmethod
-    def window(cls, name: str, coords: tuple or list, size: tuple or list, color: tuple or list, tip: str = "basic", text_bool: bool = False, win_name: str = None, min_sizes: tuple or list = None, max_sizes: tuple or list = None) -> pygame.Surface:
+    def window(cls, name: str, coords: tuple or list, size: tuple or list, color: tuple or list, type_: str = "basic", text_bool: bool = False, win_name: str = None, min_sizes: tuple or list = None, max_sizes: tuple or list = None) -> pygame.Surface:
         if min_sizes and max_sizes: 
             s = size if not win_name else cls.memory[win_name]["surface"].get_size()
             if min_sizes > s or max_sizes < s:
@@ -704,7 +731,7 @@ def update(tiles):
                         _memory["surface_in"] = pygame.Surface(np.array(size) - 6)
                         _memory["surface_in_in"] = pygame.Surface(np.array(size) - 16)
                 else:
-                    if tip == "button" or tip == 2:
+                    if type_ == "button" or type_ == 2:
                         if is_cursor_in_surface(x_result, y_result):
                             _memory["condition"] = "waked_up"
                         else:
@@ -751,19 +778,19 @@ def update(tiles):
                     return (a, _memory["coords"])
         #-----------------------------------------------------------------
 
-        #-The "tip" Parameter Setting-------------------------------------------------------------------------------------------------------------------------------------------------------
-        if tip == "basic":
+        #-The "type_" Parameter Setting-------------------------------------------------------------------------------------------------------------------------------------------------------
+        if type_ == "basic":
             _memory["surface"].fill(color)
 
             character_blit(name, _memory["surface"])
-        elif tip == "button":
+        elif type_ == "button":
             if _memory["condition"] == "waked_up":
                 _memory["surface"].fill(tuple(map(color_fix_p, color)))
             elif _memory["condition"] == "idle":
                 _memory["surface"].fill(tuple(map(color_fix_m, color)))
 
             character_blit(name, _memory["surface"])
-        elif tip == "scrollbar":
+        elif type_ == "scrollbar":
             _memory["surface"].fill((0, 0, 0, 0))
 
             pygame.draw.rect(_memory["surface"], color, (_memory["scroll"][0], _memory["scroll"][1], 10, size[1]))
@@ -773,13 +800,13 @@ def update(tiles):
         else:
             _memory["surface_in"].fill(tuple(map(color_fix_p, color)))
 
-            if tip == 1:
+            if type_ == 1:
                 _memory["surface_in"].blit(image_.lightCursor_4x, (x_result, y_result) - np.array(lightCursor_size) * 2)
                 cene, bene = _memory["surface_in"].get_size()
                 pygame.draw.rect(_memory["surface_in"], tuple(map(color_fix_m, color)), (2, 2, cene - 4, bene - 4))
 
                 character_blit(name, _memory["surface_in"])
-            elif tip == 2:
+            elif type_ == 2:
                 _memory["surface_in_in"].fill(color)
                 cene, bene = _memory["surface_in_in"].get_size()
 
@@ -804,7 +831,7 @@ def update(tiles):
                     else:
                         y = 8
                 _memory["surface_in"].blit(_memory["surface_in_in"], (x, y))
-            elif tip == 3:
+            elif type_ == 3:
                 cene, bene = _memory["surface_in"].get_size()
                 pygame.draw.rect(_memory["surface_in"], tuple(map(color_fix_m, color)), (0, 0, cene, bene))
 
@@ -816,7 +843,7 @@ def update(tiles):
         #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         if win_name:
-            clickable = True if tip == "button" else False
+            clickable = True if type_ == "button" else False
             cls.add_images({_memory["coords"]: _memory["surface"]}, win_name, clickable = clickable)
         else:
             return _memory["surface"], _memory["coords"]

@@ -8,8 +8,8 @@ def read(return_dict = "worked"):
             datas = json.loads(file.read())
 
             for key in datas.keys():
-                tile_dict_RAW.update({key: {"layers": {}, "visibility": datas[key]["visibility"], "parallax": datas[key]["parallax"]}})
-                tile_dict.update({int(key): {"layers": {}, "visibility": datas[key]["visibility"], "parallax": datas[key]["parallax"]}})
+                tile_dict_RAW.update({key: {"layers": {}, "visibility": datas[key]["visibility"], "parallax": datas[key]["parallax"], "hitbox": datas[key]["hitbox"]}})
+                tile_dict.update({int(key): {"layers": {}, "visibility": datas[key]["visibility"], "parallax": datas[key]["parallax"], "hitbox": datas[key]["hitbox"]}})
 
                 for data in datas[key]["layers"].keys():
                     coords = data[1:-1].split(", ")
