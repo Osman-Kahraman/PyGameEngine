@@ -58,7 +58,7 @@ class Temp:
                     surface.fill((255, 255, 255))
                     fixed.update({a: surface})
 
-                result = Physic().collision([self.coords[0], self.coords[1]], self.anim.frame_image, fixed, True)
+                result = Physic().collision([self.coords[0], self.coords[1]], self.image, fixed, True)
                 if result:
                     overlap = result.overlap_rect
                     item_x, item_y = result.item_coords
@@ -72,10 +72,10 @@ class Temp:
                             self.coords[1] = item_y + item_h
                             self.velocity_y = 0
                     else: #x collision
+                        self.coords[0] -= 1
                         self.velocity_x = 0
                 else:
-                    pass
-                    #self.coords[1] += 10
+                    self.coords[1] += 10
             else:
                 self.run = False
                 self.anim = ""
