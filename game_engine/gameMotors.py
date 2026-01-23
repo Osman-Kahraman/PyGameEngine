@@ -268,28 +268,35 @@ source
         return [p for _, p in points]
 
     def render(self, light_pos, image, image_pos):
-        clarify = (image_pos[0] - light_pos[0], image_pos[1] - light_pos[1])
+        i_x, i_y = image_pos
+        l_x, l_y = light_pos
+        i_s_x, i_s_y = image.get_size()
 
-        segments = self.screen_border_segments()
-        segments += self.segments_from_image(image, clarify)
+        is_inside = i_x + i_s_x > l_x and i_y + i_s_y > l_y and i_x < l_x + self.width and i_y < l_y + self.height
 
-        poly = self.visibility_polygon((self.width // 2, self.height // 2), segments) #Inserting the source in the middle coords
+        if is_inside: #optimizing: only works if image is inside the light
+            clarify = (i_x - l_x, i_y - l_y)
 
-        mask_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        mask_surf.fill((0, 0, 0, 0))
+            segments = self.screen_border_segments()
+            segments += self.segments_from_image(image, clarify)
 
-        if len(poly) >= 3:
-            pygame.gfxdraw.filled_polygon(
-                mask_surf,
-                poly,
-                (255, 255, 255, 255)
-            )
+            poly = self.visibility_polygon((self.width // 2, self.height // 2), segments) #Inserting the source in the middle coords
+            
+            mask_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+            mask_surf.fill((0, 0, 0, 0))
+            
+            if len(poly) >= 3:
+                pygame.gfxdraw.filled_polygon(
+                    mask_surf,
+                    poly,
+                    (255, 255, 255, 255)
+                )
 
-        light_cut = self.light_image.copy()
-        light_cut.blit(mask_surf, (0, 0), special_flags = pygame.BLEND_RGBA_MULT)
+            light_cut = self.light_image.copy()
+            light_cut.blit(mask_surf, (0, 0), special_flags = pygame.BLEND_RGBA_MULT)
 
-        self.darkness.fill((0, 0, 0, 0))
-        self.darkness.blit(light_cut, (0, 0))
+            self.darkness.fill((0, 0, 0, 0))
+            self.darkness.blit(light_cut, (0, 0))
 
         return self.darkness
     
