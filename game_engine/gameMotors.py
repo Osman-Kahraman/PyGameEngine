@@ -347,7 +347,7 @@ Function(s);/
         points.sort(key=lambda x: x[0])
         return [p for _, p in points]
 
-    def render(self, light_pos: tuple, image: pygame.image, image_pos: tuple) -> pygame.Surface:
+    def render(self, light_pos: tuple, items: list) -> pygame.Surface:
         """
         Renders the light and shadow effect using the given image as
         an occluder and returns the final light surface.
@@ -359,22 +359,24 @@ Function(s);/
         Examples of the Parameters;
         ---------------------------
         >>> light_pos = (400, 300)
-        >>> image = pygame.image.load("C:/Users/Osman/foo/bar.png").convert_alpha()
-        >>> image_pos = (120, 80)
+        >>> items = [[(3, 4), pygame_image_1], [(5, 6), pygame_image_2]]
         """
 
-        i_x, i_y = image_pos
-        l_x, l_y = light_pos
-        i_s_x, i_s_y = image.get_size()
+        segments = self.screen_border_segments()
 
-        is_inside = i_x + i_s_x > l_x and i_y + i_s_y > l_y and i_x < l_x + self.width and i_y < l_y + self.height
+        for image_pos, image in items:
+            i_x, i_y = image_pos
+            l_x, l_y = light_pos
+            i_s_x, i_s_y = image.get_size()
 
-        if is_inside: #optimizing: only works if image is inside the light
-            clarify = (i_x - l_x, i_y - l_y)
+            is_inside = i_x + i_s_x > l_x and i_y + i_s_y > l_y and i_x < l_x + self.width and i_y < l_y + self.height
 
-            segments = self.screen_border_segments()
-            segments += self.segments_from_image(image, clarify)
+            if is_inside: #optimizing: only works if image is inside the light
+                clarify = (i_x - l_x, i_y - l_y)
 
+                segments += self.segments_from_image(image, clarify)
+
+        if len(segments) > 4: #if there is more segments except border
             poly = self.visibility_polygon((self.width // 2, self.height // 2), segments) #Inserting the source in the middle coords
             
             mask_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)

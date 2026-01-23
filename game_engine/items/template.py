@@ -154,10 +154,10 @@ class Temp:
                 c_x, c_y = self.coords
                 light_pos = (c_x + l_c_x - size_mid, c_y + l_c_y - size_mid) #Inserting the source in the middle coords
                 
+                light_items = [[ITEMS[i].coords, ITEMS[i].surface] for i in ITEMS.keys() if i != self.name]
                 light_surface = self.light_system.render(
                     light_pos,
-                    ITEMS["character"].surface,
-                    ITEMS["character"].coords
+                    light_items
                 )
 
                 return ((self.surface, self.coords), (light_surface, light_pos))
