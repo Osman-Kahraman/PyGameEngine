@@ -5,7 +5,7 @@ from PyQt5 import QtWidgets
 from images.init import *
 import tiles
 repackage.up()
-from gameMotors import *
+from package import *
 
 class Window:
     def __init__(self, screen: pygame.Surface):

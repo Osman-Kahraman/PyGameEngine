@@ -2,7 +2,7 @@ import importlib, repackage
 
 import tiles
 repackage.up()
-from gameMotors import *
+from package import *
 
 class Window:
     def __init__(self, screen: pygame.Surface):

@@ -8,7 +8,7 @@ pygame.mouse.set_visible(False)
 
 from images.init import *
 repackage.up()
-from gameMotors import *
+from package import *
 
 import game_engine.ui.home as home, game, designer
 home_ = home.Window(screen)

@@ -1,7 +1,7 @@
 import repackage
 
 repackage.up()
-from gameMotors import *
+from package import *
 from items.info import ITEMS
 
 attributeMemory = {}
