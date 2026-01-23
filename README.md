@@ -42,6 +42,8 @@ pip install -r requirements.txt
 
 ## Project Structure
 
+![PyGameEngine-file-structure](https://github.com/user-attachments/assets/b0d658fa-43a6-4c5a-a474-1884d7483e6d)
+
 ```
 PyGameEngine/
 ├── game_engine/                # Core game engine package
