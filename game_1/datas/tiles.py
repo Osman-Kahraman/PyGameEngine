@@ -15,10 +15,6 @@ def read(return_dict = "worked"):
                 coords = data[1:-1].split(", ")
                 directory = datas[key]["layers"][data].split("/")
 
-                if len(directory) >= 2:
-                    data_image = directory[-1]
-                else:
-                    data_image = "image"
                 with open("items/info.json", "r") as file:
                     try:
                         coords = json.loads(file.read())[directory[0].rstrip(".png")]["coords"]
