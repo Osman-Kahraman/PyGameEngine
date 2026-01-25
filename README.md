@@ -1,5 +1,3 @@
-# PyGameEngine
-
 **PyGameEngine** is a custom game engine built in **Python**, focusing on **modularity**, **reusability**, and clean architectural design. 
 And I want to suffer in PyGame...
 It provides a structured foundation for developing 2D games while keeping core engine logic separate from gameplay rules.
@@ -42,7 +40,7 @@ pip install -r requirements.txt
 
 ## Project Structure
 
-![PyGameEngine-file-structure](https://github.com/user-attachments/assets/b0d658fa-43a6-4c5a-a474-1884d7483e6d)
+![PyGameEngine-file-structure](https://github.com/user-attachments/assets/86f97311-187b-4780-a29d-6c707580fa7b)# PyGameEngine
 
 ```
 PyGameEngine/
