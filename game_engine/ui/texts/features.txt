@@ -1,0 +1,12 @@
+Modular Architecture
+ Engine components are easy to extend and reuse, such as Animation, Camera, 
+ Light, Physic and UI
+
+Core Game Mechanics
+ Physics, event handling, and motor functions
+
+Structured Gameplay Logic
+ Clear separation between engine and game logic
+
+Built with PyGame
+ Uses PyGame for rendering, input, and timing

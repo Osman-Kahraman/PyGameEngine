@@ -17,10 +17,14 @@ class Window:
         self.command = "home_start"
         self.blur_screen = pygame.Surface((1366, 768)).convert_alpha()
 
-        #-Requested News------------------------------------------------------------
-        with open("../game_engine/news.txt", "r", encoding = "utf-8") as file:
-            self.news = "".join(file.readlines())
-        #---------------------------------------------------------------------------
+        #-readme---------------------------------------------------------------------
+        with open("../game_engine/ui/texts/description.txt", "r", encoding = "utf-8") as file:
+            self.desc = "".join(file.readlines())
+        with open("../game_engine/ui/texts/features.txt", "r", encoding = "utf-8") as file:
+            self.features = "".join(file.readlines())
+        with open("../game_engine/ui/texts/structure.txt", "r", encoding = "utf-8") as file:
+            self.structure = "".join(file.readlines())
+        #----------------------------------------------------------------------------
 
     def update(self):
         pygame_.get()
@@ -60,30 +64,27 @@ class Window:
         #---------------------------
 
         #-UI Settings----------------------------------------------------------------------------------------------------------------------------------------------
-        a = UI.window("news", (20, 70), (1356 // 2, 400), (30, 30, 30), 2)
+        a = UI.window("desc", (20, 70), (1356 // 2, 250), (30, 30, 30), 2)
         self.surface.blit(a[0], a[1])
-        UI.text(self.news, 18, (15, 10), (200, 200, 200), win_name = "news", font = "segoescript")
-        b = UI.window("foo", (1356 // 2 + 40, 70), (1356 // 2 - 40, 200), (30, 30, 30), 2)
+        UI.text("PyGameEngine", 30, (15, 10), (200, 200, 200), win_name = "desc", font = "segoescript")
+        UI.text(self.desc, 16, (20, 50), (200, 200, 200), win_name = "desc")
+        
+        b = UI.window("features", (1356 // 2 + 40, 70), (1356 // 2 - 40, 300), (30, 30, 30), 2)
         self.surface.blit(b[0], b[1])
-        UI.text(
-        """Lorem ipsum dolor sit amet, sint salutatus ius ut. Et purto molestie pro. Legendos recusabo intellegat ea ius, possit facilis torquatos cu quo. Pro quas veritus detraxit cu.
-
-        Omnes audire torquatos et eos. Partem tritani sit id. Omnes percipit democritum eu his. His nobis dolores et, pri nihil intellegat cu, duis omnesque an per.
-
-        Agam referrentur cum cu, tritani invidunt abhorreant ex eum. No nec eruditi appetere elaboraret. Has at nostro saperet neglegentur. Cum novum iisque delicatissimi te, ad pro dicam periculis. Id eos ignota propriae, ne eam invenire iudicabit, eu vis soluta doctus singulis.
-
-        Nullam vivendum quo ei, at vulputate vituperata sea. Vivendo splendide quo in. Amet disputationi vim et, ei sea feugiat voluptatum adversarium, reque primis malorum cum te. No mea praesent hendrerit complectitur. Sed erroribus imperdiet an. At habeo assum fabellas pro. Pro ad mollis laoreet legendos, ei vel agam libris verear, ut usu quot salutandi.
-
-        Ius partiendo petentium ne, ad quo purto justo, usu et error conceptam persequeris. Indoctum explicari cum an, vim ei erroribus voluptatibus. Quem feugiat sea at, utinam eligendi eum ex, wisi saepe vis ei. Pri vivendo petentium scriptorem ne, no sed inani persecuti. Pro in lucilius definiebas, vix iudico decore et. Est essent assueverit ex, minimum officiis est ne, at nam nibh nonumy.""", 18, (0, 0), (200, 200, 200), "foo") 
-        c = UI.window("bar", (20, 480), (260, 60), (30, 30, 30), 2)
+        UI.text("Features", 30, (15, 10), (200, 200, 200), win_name = "features", font = "segoescript")
+        UI.text(self.features, 16, (20, 50), (200, 200, 200), win_name = "features")
+        
+        c = UI.window("image", (1356 // 2 + 330, 380), (350, 350), (30, 30, 30), 2)
         self.surface.blit(c[0], c[1])
-        UI.text("Lorem ipsum dolor sit amet, sint salutatus ius ut.", 19, (5, 5), (200, 200, 200), "bar")
-        d = UI.window("e-mail", (300, 480), (400, 60), (30, 30, 30), 2)
+        UI.add_images({(0, 0): image_.ditheredPysnake}, "image")
+        
+        d = UI.window("e-mail", (1356 // 2 + 40, 380), (280, 60), (30, 30, 30), 2)
         self.surface.blit(d[0], d[1])
-        UI.text("o_kahraman@outlook.com :)", 19, (5, 5), (200, 200, 200), "e-mail")
-        e = UI.window("casio", (1356 // 2 + 40, 280), (638, 359), (30, 30, 30), 2)
+        UI.text("o_kahraman@outlook.com", 19, (5, 5), (200, 200, 200), "e-mail")
+        
+        e = UI.window("structure", (20, 330), (1356 // 2, 400), (30, 30, 30), 2)
         self.surface.blit(e[0], e[1])
-        UI.add_images({(0, 0): image_.casio}, "casio")
+        UI.text(self.structure, 16, (0, 0), (200, 200, 200), win_name = "structure")
 
         if self.file_action:
             top_navbar_action_surf, top_navbar_action_coor = UI.window("top_navbar_action", (10, 40), (100, 300), (50, 50, 50), 1)
