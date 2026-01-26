@@ -1,7 +1,8 @@
-import importlib, repackage
+import importlib, repackage, pygame, numpy as np, os
 
 repackage.up()
 from package import *
+from event import pygame_
 
 class Window:
     def __init__(self, screen: pygame.Surface):

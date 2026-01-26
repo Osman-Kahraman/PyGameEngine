@@ -1,7 +1,8 @@
-import repackage
+import repackage, json, pygame, time
 
 repackage.up()
 from package import *
+from event import pygame_
 from game_state import GameState
 from items.info import ITEMS
 

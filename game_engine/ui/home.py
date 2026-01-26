@@ -1,8 +1,9 @@
-import repackage
+import repackage, numpy as np
 
 from images.init import *
 repackage.up()
 from package import *
+from event import pygame_
 
 class Window:
     def __init__(self, screen: pygame.Surface):

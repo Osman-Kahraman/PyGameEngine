@@ -1,4 +1,4 @@
-import repackage, sys
+import repackage, sys, numpy as np, os, json
 from PIL import Image
 from PyQt5 import QtWidgets
 
@@ -6,6 +6,7 @@ from images.init import *
 import game_1.datas.tiles as tiles
 repackage.up()
 from package import *
+from event import pygame_
 
 class Window:
     def __init__(self, screen: pygame.Surface):
