@@ -42,8 +42,6 @@ pip install -r requirements.txt
 
 ## Project Structure
 
-![PyGameEngine-file-structure](https://github.com/user-attachments/assets/86f97311-187b-4780-a29d-6c707580fa7b)# PyGameEngine
-
 ```
 PyGameEngine/
 ├── game_1/                     # Example game
