@@ -2,7 +2,7 @@ import repackage, sys, numpy as np, os, json
 from PIL import Image
 from PyQt5 import QtWidgets
 
-from images.init import *
+from ui.images.init import *
 import game_1.datas.tiles as tiles
 repackage.up()
 from package import *

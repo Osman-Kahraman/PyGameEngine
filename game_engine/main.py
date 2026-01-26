@@ -8,11 +8,11 @@ pygame.mouse.set_visible(False)
 
 os.chdir("game_1")
 
-from images.init import *
+from ui.images.init import *
 repackage.up()
 from package import *
 
-import game_engine.ui.home as home, game, designer
+from ui import home, game, designer
 
 home_ = home.Window(screen)
 game_ = game.Window(screen)

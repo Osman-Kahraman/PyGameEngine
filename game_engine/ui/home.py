@@ -1,6 +1,6 @@
 import repackage, numpy as np
 
-from images.init import *
+from ui.images.init import *
 repackage.up()
 from package import *
 from event import pygame_
