@@ -7,4 +7,3 @@ ENV/
 .vscode/
 .idea/
 *.swp
-*.json
