@@ -1,4 +1,5 @@
-import repackage, numpy as np
+import repackage, numpy as np, os, json, sys
+from PyQt5 import QtWidgets
 
 from ui.images.init import *
 repackage.up()
@@ -14,17 +15,23 @@ class Window:
         self.cursor_bool = True
         self.cursor = image_.normalCursor
         self.file_action = False
+        self.open_action = False
         self.command = "home_start"
         self.blur_screen = pygame.Surface((1366, 768)).convert_alpha()
 
-        #-readme---------------------------------------------------------------------
-        with open("../game_engine/ui/texts/description.txt", "r", encoding = "utf-8") as file:
+        #-README---------------------------------------------------------------------
+        with open("game_engine/ui/texts/description.txt", "r", encoding = "utf-8") as file:
             self.desc = "".join(file.readlines())
-        with open("../game_engine/ui/texts/features.txt", "r", encoding = "utf-8") as file:
+        with open("game_engine/ui/texts/features.txt", "r", encoding = "utf-8") as file:
             self.features = "".join(file.readlines())
-        with open("../game_engine/ui/texts/structure.txt", "r", encoding = "utf-8") as file:
+        with open("game_engine/ui/texts/structure.txt", "r", encoding = "utf-8") as file:
             self.structure = "".join(file.readlines())
         #----------------------------------------------------------------------------
+
+        #-History---------------------------------------------------------------------------
+        with open("game_engine/history.json", "r") as json_file:
+            self.history = json.loads(json_file.read())
+        #-----------------------------------------------------------------------------------
 
     def update(self):
         pygame_.get()
@@ -99,22 +106,67 @@ class Window:
         self.surface.blit(i[0], i[1])
 
         if self.file_action:
-            top_navbar_action_surf, top_navbar_action_coor = UI.window("top_navbar_action", (10, 40), (100, 300), (50, 50, 50), 1)
+            top_navbar_action_surf, top_navbar_action_coor = UI.window("top_navbar_action", (10, 40), (120, 100), (50, 50, 50), 1)
             
             self.blur_screen.fill((70, 70, 70, 128))
             self.surface.blit(self.blur_screen, (0, 0))
             
-            UI.window("action_1", (2, 2), (90, 20), (50, 50, 50), "button", win_name = "top_navbar_action")
-            UI.text("New...", 14, (3, 3), (200, 200, 200), win_name = "action_1")
-            UI.window("action_2", (2, 23), (90, 20), (50, 50, 50), "button", win_name = "top_navbar_action")
-            UI.text("Open...", 14, (3, 3), (200, 200, 200), win_name = "action_2")
+            UI.window("new_button", (2, 2), (110, 20), (50, 50, 50), "button", win_name = "top_navbar_action")
+            UI.text("New...", 14, (3, 3), (200, 200, 200), win_name = "new_button")
+            UI.window("open_button", (2, 23), (110, 20), (50, 50, 50), "button", win_name = "top_navbar_action")
+            UI.text("Open...", 14, (3, 3), (200, 200, 200), win_name = "open_button")
+            UI.window("open_recent_button", (2, 43), (110, 20), (50, 50, 50), "button", win_name = "top_navbar_action")
+            UI.text("Open Recent >", 14, (3, 3), (200, 200, 200), win_name = "open_recent_button")
             try:
                 self.surface.blit(top_navbar_action_surf, top_navbar_action_coor)
             except:
                 if top_navbar_action_surf.item_coords == (2, 2):
                     pass
                 elif top_navbar_action_surf.item_coords == (2, 23):
-                    self.command = "game_start"
+                    class Window_(QtWidgets.QWidget):
+                        def __init__(self):
+                            super().__init__()
+
+                            msg = "Choose a folder"
+                            self.filePATH = QtWidgets.QFileDialog.getExistingDirectory(self, msg, os.getenv("HOME"))
+
+                    app = QtWidgets.QApplication(sys.argv)
+
+                    target_dir = Window_().filePATH
+                    current_dir = os.path.basename(os.getcwd())
+
+                    if target_dir:
+                        with open("game_engine/history.json", "w") as json_file:
+                            if target_dir not in self.history["prev_folders"]:
+                                self.history["prev_folders"].append(target_dir)
+                            
+                            json.dump(self.history, json_file)
+
+                        if current_dir != target_dir:
+                            os.chdir(target_dir)
+                        
+                        self.command = "game_start"
+                elif top_navbar_action_surf.item_coords == (2, 43):
+                    self.open_action = False if self.open_action else True
+                    
+        if self.open_action:
+            open_action_surf, open_action_coor = UI.window("open_action", (130, 83), (500, 100), (50, 50, 50), 1)
+            
+            for index, game_name in enumerate(self.history["prev_folders"]):
+                UI.window(f"game_button{index}", (2, 2), (490, 20), (50, 50, 50), "button", win_name = "open_action")
+                UI.text(game_name, 14, (3, 3), (200, 200, 200), win_name = f"game_button{index}")
+
+            try:
+                self.surface.blit(open_action_surf, open_action_coor)
+            except:
+                index = open_action_surf.item_index
+                target_dir = self.history["prev_folders"][index]
+                current_dir = os.path.basename(os.getcwd())
+
+                if current_dir != target_dir:
+                    os.chdir(target_dir)
+
+                self.command = "game_start"
 
         top_navbar_surf, top_navbar_coor = UI.window("top_navbar", (0, 0), (1366, 40), (0, 0, 0), 1)
         UI.window("fileActionButton", (15, 8), (70, 20), (0, 0, 0), "button", win_name = "top_navbar")
@@ -125,7 +177,11 @@ class Window:
             self.surface.blit(top_navbar_surf, top_navbar_coor)
         except TypeError:
             if top_navbar_surf.item_coords == (15, 8):
-                self.file_action = False if self.file_action else True
+                if self.file_action:
+                    self.open_action = False
+                    self.file_action = False
+                else:
+                    self.file_action = True
             else:
                 pass
 
