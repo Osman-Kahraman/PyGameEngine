@@ -18,11 +18,11 @@ class Window:
         self.blur_screen = pygame.Surface((1366, 768)).convert_alpha()
 
         #-readme---------------------------------------------------------------------
-        with open("../game_engine/ui/texts/description.txt", "r", encoding = "utf-8") as file:
+        with open("game_engine/ui/texts/description.txt", "r", encoding = "utf-8") as file:
             self.desc = "".join(file.readlines())
-        with open("../game_engine/ui/texts/features.txt", "r", encoding = "utf-8") as file:
+        with open("game_engine/ui/texts/features.txt", "r", encoding = "utf-8") as file:
             self.features = "".join(file.readlines())
-        with open("../game_engine/ui/texts/structure.txt", "r", encoding = "utf-8") as file:
+        with open("game_engine/ui/texts/structure.txt", "r", encoding = "utf-8") as file:
             self.structure = "".join(file.readlines())
         #----------------------------------------------------------------------------
 

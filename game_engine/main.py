@@ -6,8 +6,6 @@ screen = pygame.display.set_mode(surface_size) #pygame.FULLSCREEN
 pygame.display.set_caption("PyGameEngine")
 pygame.mouse.set_visible(False)
 
-os.chdir("game_1")
-
 from ui.images.init import *
 repackage.up()
 from package import *
@@ -15,29 +13,33 @@ from package import *
 from ui import home, game, designer
 
 home_ = home.Window(screen)
-game_ = game.Window(screen)
-designer_ = designer.Window(screen)
+game_ = None
+designer_ = None
 
 command = "home_start"
 while command:
     if command.startswith("home"):
         command = home_.update()
-        game_.command = "game_start"
-        if command.endswith("close"): 
-            pass
     elif command.startswith("game"): 
-        command = game_.update()
-        home_.command = "home_start"
-        designer_.command = "designer_start"
-        if command.endswith("close"):
-            command = "home_start"
-        elif command == "designer_start":
-            designer_ = designer.Window(screen) #It needs to be designer_.tile_dict_RAW and designer_.tile_dict parameters reloaded. 
-    else:
-        command = designer_.update()
-        game_.command = "game_start"
-        if command.endswith("close"):
+        if game_ is None:
+            os.chdir("game_1")
             game_ = game.Window(screen)
+        
+        command = game_.update()
+        
+        if command.endswith("close"):
+            home_.command = "home_start"
+            game_.command = "game_start"
+            command = "home_start"
+    elif command.startswith("designer"):
+        if designer_ is None:
+            designer_ = designer.Window(screen) #It needs to be designer_.tile_dict_RAW and designer_.tile_dict parameters reloaded. 
+
+        command = designer_.update()
+
+        if command.endswith("close"):
+            game_.command = "game_start"
+            designer_.command = "designer_start"
             command = "game_start"
 
     if command == "quit":

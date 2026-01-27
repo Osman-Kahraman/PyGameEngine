@@ -41,7 +41,7 @@ Function(s);/
     memory = {}
     cursor_pos = (0, 0)
     selam = 1
-    pointer = Animation("../game_engine/ui/images/pointer", 4)
+    pointer = Animation("game_engine/ui/images/pointer", 4)
 
     @classmethod
     def delete_images(cls, coords: list or tuple, win_name: str) -> list:
