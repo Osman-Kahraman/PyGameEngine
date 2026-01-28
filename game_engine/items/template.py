@@ -1,28 +1,34 @@
-import repackage, json, pygame, time
+import json
+import time
+
+import pygame
+import repackage
 
 repackage.up()
-from package import *
-from event import pygame_
-from game_state import GameState
+from event import pygame_  # noqa: F401
 from items.info import ITEMS
+from package import Animation, Camera, Light, Physic  # noqa: F401
 
 attributeMemory = {}
+
+
 class Pin:
     global attributeMemory
 
     def __init__(self, **attributes) -> None:
         for attribute in attributes.keys():
-            if not attribute in attributeMemory.keys(): #if not hasattr(self, name):
+            if attribute not in attributeMemory.keys():  # if not hasattr(self, name):
                 attributeMemory.update({attribute: attributes[attribute]})
 
     def __setattr__(self, name: str, value) -> None:
-        attributeMemory[name] = value #super().__setattr__(name, value)
+        attributeMemory[name] = value  # super().__setattr__(name, value)
 
     def __getattribute__(self, name: str):
         return attributeMemory[name]
 
+
 class Temp:
-    def __init__(self, name, data = []):
+    def __init__(self, name):
         self.name = name
         ITEMS[name] = self
 
@@ -63,26 +69,28 @@ class Temp:
             if self.coords[1] <= 1000:
                 for i in self.tiles.keys():
                     if self.tiles[i]["hitbox"]:
-                        result = Physic().pixel_perfect_collision([self.coords[0], self.coords[1]], self.image, self.tiles[i]["hitbox"], True)
+                        result = Physic().pixel_perfect_collision(
+                            [self.coords[0], self.coords[1]], self.image, self.tiles[i]["hitbox"], True
+                        )
                         if result:
                             overlap = result.overlap_rect
                             item_x, item_y = result.item_coords
                             item_w, item_h = result.item_size
 
-                            if overlap.height < overlap.width: #y collision
-                                if self.velocity_y > 0: # landing
+                            if overlap.height < overlap.width:  # y collision
+                                if self.velocity_y > 0:  # landing
                                     self.coords[1] = item_y - self.image_sizes[1]
                                     self.on_ground = True
-                                elif self.velocity_y < 0: # head hit
+                                elif self.velocity_y < 0:  # head hit
                                     self.coords[1] = item_y + item_h
-                                
+
                                 self.velocity_y = 0
-                            else: #x collision
-                                if self.velocity_x > 0: # left hit
+                            else:  # x collision
+                                if self.velocity_x > 0:  # left hit
                                     self.coords[0] -= 1
-                                elif self.velocity_x < 0: # right hit
+                                elif self.velocity_x < 0:  # right hit
                                     self.coords[0] += 1
-                                
+
                                 self.velocity_x = 0
                     else:
                         self.on_ground = False
@@ -93,24 +101,22 @@ class Temp:
     def info(self, infoName):
         if infoName in ITEMS.keys():
             data = ITEMS[infoName]
-            return {"sizes": data.image_sizes, 
-                    "coords": data.coords, 
-                    "health": int(data.health), 
-                    "scale": int(data.scale), 
-                    "animations": data.animations}
+            return {
+                "sizes": data.image_sizes,
+                "coords": data.coords,
+                "health": int(data.health),
+                "scale": int(data.scale),
+                "animations": data.animations,
+            }
         else:
-            return {"sizes": (0, 0), 
-                    "coords": (0, 0), 
-                    "health": 100, 
-                    "scale": 1, 
-                    "animations": ""}
+            return {"sizes": (0, 0), "coords": (0, 0), "health": 100, "scale": 1, "animations": ""}
 
     def decorate(self, func):
         def wrapper(tiles):
             if not self.tiles:
                 self.tiles = tiles
 
-            #-Animation Iterable System---------------------------------------------------------------------------
+            # -Animation Iterable System---------------------------------------------------------------------------
             if self.anim:
                 if self.direction == "Right":
                     self.surface = pygame.transform.flip(next(self.anim), True, False)
@@ -118,23 +124,23 @@ class Temp:
                     self.surface = next(self.anim)
             else:
                 self.surface = self.image
-            #-----------------------------------------------------------------------------------------------------
+            # -----------------------------------------------------------------------------------------------------
 
             if self.run:
-                #-Gravity----------------------------------------
+                # -Gravity----------------------------------------
                 if not self.on_ground:
                     self.velocity_y += self.GRAVITY
                     if self.velocity_y > self.MAX_FALL_SPEED:
                         self.velocity_y = self.MAX_FALL_SPEED
-                #------------------------------------------------
+                # ------------------------------------------------
 
-                #-User Codes--------------------------------------------------------------------------------------
+                # -User Codes--------------------------------------------------------------------------------------
                 func(tiles)
-                #-------------------------------------------------------------------------------------------------
+                # -------------------------------------------------------------------------------------------------
 
-            #-Collision-------------------------------------------------------------------------------------------
+            # -Collision-------------------------------------------------------------------------------------------
             self.collision()
-            #-----------------------------------------------------------------------------------------------------
+            # -----------------------------------------------------------------------------------------------------
 
             with open("items/info.json", "r") as fileRead:
                 data = json.loads(fileRead.read())
@@ -143,7 +149,9 @@ class Temp:
                 data[self.name]["coords"] = self.coords
                 data[self.name]["health"] = self.health
                 data[self.name]["scale"] = self.scale
-                data[self.name]["image"] = self.anim.frame_PATH if self.anim else f"images/built_in_images/{self.name}.png"
+                data[self.name]["image"] = (
+                    self.anim.frame_PATH if self.anim else f"images/built_in_images/{self.name}.png"
+                )
 
                 try:
                     with open("items/info.json", "w") as fileWrite:
@@ -154,20 +162,20 @@ class Temp:
             if self.lights:
                 if self.light_system is None:
                     self.light_system = Light((self.lights["size"], self.lights["size"]))
-                
+
                 l_c_x, l_c_y = self.lights["coords"]
                 size_mid = self.lights["size"] // 2
                 c_x, c_y = self.coords
-                light_pos = (c_x + l_c_x - size_mid, c_y + l_c_y - size_mid) #Inserting the source in the middle coords
-                
+                light_pos = (
+                    c_x + l_c_x - size_mid,
+                    c_y + l_c_y - size_mid,
+                )  # Inserting the source in the middle coords
+
                 light_items = [[ITEMS[i].coords, ITEMS[i].surface] for i in ITEMS.keys() if i != self.name]
-                light_surface = self.light_system.render(
-                    light_pos,
-                    light_items
-                )
+                light_surface = self.light_system.render(light_pos, light_items)
 
                 return ((self.surface, self.coords), (light_surface, light_pos))
             else:
-                return ((self.surface, self.coords), )
+                return ((self.surface, self.coords),)
 
         return wrapper

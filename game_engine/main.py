@@ -1,16 +1,16 @@
-import pygame, repackage, os
+
+import pygame
+import repackage
 
 timer = pygame.time.Clock()
 surface_size = (1366, 768)
-screen = pygame.display.set_mode(surface_size) #pygame.FULLSCREEN
+screen = pygame.display.set_mode(surface_size)  # pygame.FULLSCREEN
 pygame.display.set_caption("PyGameEngine")
 pygame.mouse.set_visible(False)
 
-from ui.images.init import *
-repackage.up()
-from package import *
 
-from ui import home, game, designer
+repackage.up()
+from ui import designer, game, home
 
 home_ = home.Window(screen)
 game_ = None
@@ -20,19 +20,21 @@ command = "home_start"
 while command:
     if command.startswith("home"):
         command = home_.update()
-    elif command.startswith("game"): 
+    elif command.startswith("game"):
         if game_ is None:
             game_ = game.Window(screen)
-        
+
         command = game_.update()
-        
+
         if command.endswith("close"):
             home_.command = "home_start"
             game_.command = "game_start"
             command = "home_start"
     elif command.startswith("designer"):
         if designer_ is None:
-            designer_ = designer.Window(screen) #It needs to be designer_.tile_dict_RAW and designer_.tile_dict parameters reloaded. 
+            designer_ = designer.Window(
+                screen
+            )  # It needs to be designer_.tile_dict_RAW and designer_.tile_dict parameters reloaded.
 
         command = designer_.update()
 
@@ -46,6 +48,6 @@ while command:
 
     pygame.display.update()
 
-    timer.tick(60) #FPS Limit
+    timer.tick(60)  # FPS Limit
 
 pygame.quit()

@@ -1,39 +1,42 @@
-import pygame, numpy as np, random, time, repackage
+import random
+import time
 
-from ui.images.init import *
-repackage.up()
-from event import *
+import numpy as np
+import pygame
 
 pygame.init()
 
+
 class Camera:
     """
-Camera
-======
+    Camera
+    ======
 
-About the game camera system. 
+    About the game camera system.
 
-Basic Usage of the Class:
--------------------------
->>> Camera.focus(...) #You must set the variables.
->>> Camera.shake(...) #You must set the variables.
+    Basic Usage of the Class:
+    -------------------------
+    >>> Camera.focus(...) #You must set the variables.
+    >>> Camera.shake(...) #You must set the variables.
 
-You can take the parameter;/
-`Camera.surface_size`
+    You can take the parameter;/
+    `Camera.surface_size`
 
-The Class Variable;
--------------------
->>> Camera.coords #It gives the camera's coords.
+    The Class Variable;
+    -------------------
+    >>> Camera.coords #It gives the camera's coords.
 
-Shortways of the Class:
------------------------
->>> Camera.coords[0] += 1 #You can move the camera manually like that. 
->>> Camera.coords = np.array(Camera.coords) + (-1, 2) #It's another way the usage. Also you need to import numpy module as "np" variable.
+    Shortways of the Class:
+    -----------------------
+    >>> Camera.coords[0] += 1 #You can move the camera manually like that.
+    >>> Camera.coords = np.array(Camera.coords) + (-1, 2) #It's another way the usage. Also you need to
+    import numpy module as "np" variable.
 
-Function(s);/
-`focus`
-`shake`
+    Function(s);/
+    `focus`
+    `shake`
     """
+
     surface_size = (683, 384)
     coords = [0, 0]
 
@@ -46,7 +49,7 @@ Function(s);/
         ---------------------------
         >>> item_coords = (1, 2) #x and y coordinates
         """
-        
+
         cls.coords = list(np.array(item_coords) - (np.array(cls.surface_size) // 2))
 
         return cls.coords
@@ -62,9 +65,7 @@ Function(s);/
         >>> timer = 32
         """
 
-        try:
-            cls.shaking_timer
-        except AttributeError:
+        if not hasattr(cls, "shaking_timer"):
             cls.shaking_timer = time.time()
 
         random_velocity = random.randrange(-velocity, velocity) if time.time() - cls.shaking_timer <= timer else 0

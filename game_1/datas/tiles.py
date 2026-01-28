@@ -1,15 +1,36 @@
-import json, pygame
+import json
+
+import pygame
+
 
 def read(return_dict = "worked"):
     tile_dict_RAW = {}
     tile_dict = {}
-    
+
     with open("datas/tiles.json", "r") as file:
         datas = json.loads(file.read())
 
         for key in datas.keys():
-            tile_dict_RAW.update({key: {"layers": {}, "visibility": datas[key]["visibility"], "parallax": datas[key]["parallax"], "hitbox": datas[key]["hitbox"]}})
-            tile_dict.update({int(key): {"layers": {}, "visibility": datas[key]["visibility"], "parallax": datas[key]["parallax"], "hitbox": {}}})
+            tile_dict_RAW.update(
+                {
+                    key: {
+                        "layers": {},
+                        "visibility": datas[key]["visibility"],
+                        "parallax": datas[key]["parallax"],
+                        "hitbox": datas[key]["hitbox"]
+                        }
+                    }
+                )
+            tile_dict.update(
+                {
+                    int(key): {
+                        "layers": {},
+                        "visibility": datas[key]["visibility"],
+                        "parallax": datas[key]["parallax"],
+                        "hitbox": {}
+                        }
+                    }
+                )
 
             for data in datas[key]["layers"].keys():
                 coords = data[1:-1].split(", ")
@@ -21,9 +42,20 @@ def read(return_dict = "worked"):
                     except KeyError:
                         pass
 
-                tile_dict_RAW[key]["layers"].update({"({}, {})".format(coords[0], coords[1]): datas[key]["layers"][data]})
-                tile_dict[int(key)]["layers"].update({(int(coords[0]), int(coords[1])): pygame.image.load("images/built_in_images/" + datas[key]["layers"][data]).convert_alpha()})
-            
+                tile_dict_RAW[key]["layers"].update(
+                    {
+                        "({}, {})".format(coords[0], coords[1]): datas[key]["layers"][data]
+                        }
+                    )
+                tile_dict[int(key)]["layers"].update(
+                    {
+                        (
+                            int(coords[0]),
+                            int(coords[1])
+                            ): pygame.image.load("images/built_in_images/" + datas[key]["layers"][data]).convert_alpha()
+                        }
+                    )
+
             for i, j in datas[key]["hitbox"].items():
                 a = i.strip("()").split(", ")
                 a = (int(a[0]), int(a[1]))
@@ -34,5 +66,5 @@ def read(return_dict = "worked"):
     abe = tile_dict_RAW if return_dict.lower() == "raw" else tile_dict
     if return_dict.lower() == "both":
         abe = (tile_dict_RAW, tile_dict)
-    
+
     return abe

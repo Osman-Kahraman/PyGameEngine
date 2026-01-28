@@ -1,0 +1,30 @@
+[tool.black]
+line-length = 120
+target-version = ["py39"]
+skip-string-normalization = false
+exclude = '''
+(
+  /(
+      \.git
+    | \.venv
+    | venv
+    | build
+    | dist
+    | __pycache__
+    | generated
+    | standalone
+  )/
+)
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 120
+
+[tool.ruff]
+line-length = 120
+lint.select = ["E", "F", "W", "I", "B"]
+lint.ignore = ["E203"]
+lint.per-file-ignores = { 
+    "game_engine/**/*.py" = ["E402"]
+}

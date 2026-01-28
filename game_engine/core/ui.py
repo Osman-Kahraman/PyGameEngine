@@ -1,41 +1,46 @@
+import json
 from typing import overload
-import pygame, numpy as np,  json, repackage
 from unicodedata import name
 
-from ui.images.init import *
+import numpy as np
+import pygame
+import repackage
 from core.animation import Animation
 from core.physic import Physic
+from ui.images.init import image_
+
 repackage.up()
-from event import *
+from event import pygame_
 
 pygame.init()
 
+
 class UI:
     """
-UI
-==
+    UI
+    ==
 
-Creates UI tools. Which they are window and text.
+    Creates UI tools. Which they are window and text.
 
-Basic Usage of the Class:
--------------------------
->>> UI.delete_images(...) #You must set the parameters.
->>> UI.add_images(...) #You must set the parameters.
->>> UI.fill(...) #You must set the parameters.
->>> UI.listen(...) #You must set the parameters.
->>> UI.window(...) #You must set the parameters.
->>> UI.text(...) #You must set the parameters.
+    Basic Usage of the Class:
+    -------------------------
+    >>> UI.delete_images(...) #You must set the parameters.
+    >>> UI.add_images(...) #You must set the parameters.
+    >>> UI.fill(...) #You must set the parameters.
+    >>> UI.listen(...) #You must set the parameters.
+    >>> UI.window(...) #You must set the parameters.
+    >>> UI.text(...) #You must set the parameters.
 
-The Class Variable;
--------------------
->>> physic_var.gen_obj #You can only use if you create the class variable.  
+    The Class Variable;
+    -------------------
+    >>> physic_var.gen_obj #You can only use if you create the class variable.
 
-Function(s);/
-`delete_images`
-`add_images`
-`listen`
-`window`
-`text`
+    Function(s);/
+    `delete_images`
+    `add_images`
+    `listen`
+    `window`
+    `text`
     """
 
     memory = {}
@@ -67,7 +72,8 @@ Function(s);/
     @classmethod
     def add_images(cls, images: dict, win_name: str, clickable: bool = False) -> None:
         """
-        You can add an image or images to the window with this function. Also the images can be set clickable or not-clickable. 
+        You can add an image or images to the window with this function. Also the images can be set clickable or
+        not-clickable.
 
         Examples of the Parameters;
         ---------------------------
@@ -75,13 +81,16 @@ Function(s);/
         >>> win_name = "bob"
         """
 
-        if type(images) != dict:
+        if not isinstance(images, dict):
             raise TypeError("images parameter type must be a dict, not {}".format(type(images)))
 
-        try: 
+        try:
             cls.memory[win_name]
         except KeyError:
-            raise KeyError("{name} not found. You must set {name} first.".format(name = win_name))
+            raise KeyError(
+                    f"{win_name} not found. You must set {win_name} first."
+                ) from None
+
         else:
             clickable_distinction = "clickables" if clickable else "not_clickables"
             cls.memory[win_name]["text"]["images"][clickable_distinction].update(images)
@@ -89,7 +98,7 @@ Function(s);/
     @classmethod
     def listen(cls, win_name: str) -> str:
         """
-        You can track the window name. 
+        You can track the window name.
 
         Examples of the Parameters;
         ---------------------------
@@ -104,7 +113,8 @@ Function(s);/
     @overload
     def window(self, name: str, coords: tuple or list, size: tuple or list, color: tuple or list) -> pygame.Surface:
         """
-        With this function, you can create a window surface and it makes calculation much easier and faster than normal effort. 
+        With this function, you can create a window surface and it makes calculation much easier and faster than normal
+        effort.
 
         Examples of the Parameters;
         ---------------------------
@@ -123,17 +133,44 @@ Function(s);/
         """
 
     @overload
-    def window(cls, name: str, coords: tuple or list, size: tuple or list, color: tuple or list, type_: str = None, text_bool: bool = False, win_name: str = None, min_sizes: tuple or list = None, max_sizes: tuple or list = None) -> pygame.Surface: ...
+    def window(
+        cls,
+        name: str,
+        coords: tuple or list,
+        size: tuple or list,
+        color: tuple or list,
+        type_: str = None,
+        text_bool: bool = False,
+        win_name: str = None,
+        min_sizes: tuple or list = None,
+        max_sizes: tuple or list = None,
+    ) -> pygame.Surface: ...
 
     @classmethod
-    def window(cls, name: str, coords: tuple or list, size: tuple or list, color: tuple or list, type_: str = "basic", text_bool: bool = False, win_name: str = None, min_sizes: tuple or list = None, max_sizes: tuple or list = None) -> pygame.Surface:
-        if min_sizes and max_sizes: 
+    def window(
+        cls,
+        name: str,
+        coords: tuple or list,
+        size: tuple or list,
+        color: tuple or list,
+        type_: str = "basic",
+        text_bool: bool = False,
+        win_name: str = None,
+        min_sizes: tuple or list = None,
+        max_sizes: tuple or list = None,
+    ) -> pygame.Surface:
+        if min_sizes and max_sizes:
             s = size if not win_name else cls.memory[win_name]["surface"].get_size()
             if min_sizes > s or max_sizes < s:
-                raise ArithmeticError("min_sizes not bigger than {size} or max_sizes not lower than {size}".format(size = s))
+                raise ArithmeticError(
+                    "min_sizes not bigger than {size} or max_sizes not lower than {size}".format(size=s)
+                )
 
-        def color_fix_p(n): return 255 if n >= 225 else n + 30
-        def color_fix_m(n): return 0 if n <= 30 else n - 30 
+        def color_fix_p(n):
+            return 255 if n >= 225 else n + 30
+
+        def color_fix_m(n):
+            return 0 if n <= 30 else n - 30
 
         def character_blit(name: str, surface: pygame.Surface):
             try:
@@ -155,12 +192,16 @@ Function(s);/
                                 surface.blit(image, coords)
 
                 if text_bool:
-                    pointer_coords = list(mem_imgs["not_clickables"].keys())[-cls.selam] if list(mem_imgs["not_clickables"].keys()) else (0, 0)
+                    pointer_coords = (
+                        list(mem_imgs["not_clickables"].keys())[-cls.selam]
+                        if list(mem_imgs["not_clickables"].keys())
+                        else (0, 0)
+                    )
                     pointer_coords += np.array(scroll) + (10, -5)
 
                     surface.blit(next(cls.pointer), pointer_coords)
 
-        #-Important Variables Adding to the cls.memory--------------------------------------------------------------------------------
+        # -Important Variables Adding to the cls.memory-------------------------------------------------------
         try:
             cls.memory[name]
         except KeyError:
@@ -179,35 +220,39 @@ Function(s);/
                 win_coords[1] += cls.memory[attached_win]["coords"][1]
                 attached_win = cls.memory[attached_win]["win_name"] if cls.memory[attached_win]["win_name"] else None
 
-            cls.memory[name].update({
-                "surface": surface,
-                "surface_in": surface_in,
-                "surface_in_in": surface_in_in, 
-                "coords": coords, 
-                "win_coords": win_coords, 
-                "win_name": win_name, 
-                "scroll": [0, 0], 
-                "condition": "idle", 
-                "collision": None, 
-                "text": {"images": {"clickables": {}, "not_clickables": {}}, "name": ""}
-                })
+            cls.memory[name].update(
+                {
+                    "surface": surface,
+                    "surface_in": surface_in,
+                    "surface_in_in": surface_in_in,
+                    "coords": coords,
+                    "win_coords": win_coords,
+                    "win_name": win_name,
+                    "scroll": [0, 0],
+                    "condition": "idle",
+                    "collision": None,
+                    "text": {"images": {"clickables": {}, "not_clickables": {}}, "name": ""},
+                }
+            )
 
             if text_bool:
                 try:
                     if cls.memory["info_name"]["text"]["name"] + "_c_e" != name:
                         raise FileNotFoundError
-                    with open("items/{}.py".format(cls.memory["info_name"]["text"]["name"]), "r", encoding = "utf-8") as file:
+                    with open(
+                        "items/{}.py".format(cls.memory["info_name"]["text"]["name"]), "r", encoding="utf-8"
+                    ) as file:
                         data = file.readlines()
 
                         start = data.index("    exec('''\n") + 1
-                        end = data.index("    ''')")
+                        end = data.index("    ''')\n")
                         user_codes = data[start:end]
                         user_codes = "".join(user_codes)
 
-                        cls.text(user_codes, 1, (5, 30), (255, 255, 255), name, font = "normal_anim")
+                        cls.text(user_codes, 1, (5, 30), (255, 255, 255), name, font="normal_anim")
                 except FileNotFoundError:
                     pass
-        #------------------------------------------------------------------------------------------------------------------------------
+        # ----------------------------------------------------------------------------------------------------
 
         _memory = cls.memory[name]
         x_size, y_size = _memory["surface"].get_size()
@@ -225,57 +270,66 @@ Function(s);/
             aaw = 0
         x_result, y_result = np.array(cls.cursor_pos) - _memory["win_coords"] - aaw
 
-        #-The event Parameter Setting-------------------------------------
+        # -The event Parameter Setting-------------------------------------
         for event in pygame_.event:
             if event.type == pygame.KEYDOWN:
                 if text_bool:
-                    #-Keyboard Event Input Setting-----------------------------------------------------------------------
+                    # -Keyboard Event Input Setting---------------------------------------------------------------------
                     key = event.key
 
                     if key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_SHIFT:
                         name = cls.memory["info_name"]["text"]["name"]
-                        with open(f"items/{name}.py", "w", encoding = "utf-8") as file:
-                            file.write("""
+                        with open(f"items/{name}.py", "w", encoding="utf-8") as file:
+                            file.write(
+                                f"""
+# ruff: noqa
 import repackage
 
 repackage.up()
 repackage.up()
 from game_engine.items.template import *
 
-self = Temp("{}")
+self = Temp("{name}")
 
 @self.decorate
 def update(tiles):
     exec('''
-{}
-    ''')""".format(name, _memory["text"]["name"]))
+{_memory["text"]["name"]}
+    ''')"""
+                            )
 
                             with open("items/info.json", "r") as json_file:
                                 data = json.loads(json_file.read())
 
-                                if not name in data.keys():
+                                if name not in data.keys():
                                     infos = cls.memory["info"]["text"]["name"].split("\n")
-                                    sizesInfo = infos[0].lstrip("Size: ").lstrip("(").rstrip(")").split(", ")
-                                    coordsInfo = infos[1].lstrip("Coords: ").lstrip("(").rstrip(")").split(", ")
-                                    healthInfo = int(infos[2].lstrip("Health: "))
-                                    scaleInfo = int(infos[3].lstrip("Scale: "))
+                                    sizesInfo = infos[0].removeprefix("Size: ")
+                                    coordsInfo = infos[1].removeprefix("Coords: ")
+                                    healthInfo = int(infos[2].removeprefix("Health: "))
+                                    scaleInfo = int(infos[3].removeprefix("Scale: "))
 
-                                    data.update({
-                                        name: {
-                                            "sizes": list(map(int, sizesInfo)),
-                                            "coords": list(map(int, coordsInfo)), 
-                                            "health": healthInfo, 
-                                            "scale": scaleInfo, 
-                                            "animations": [], 
-                                            "image": "images/built_in_images/{}.png".format(name), 
-                                            "lights": {}}
-                                        })
+                                    x_size, y_size = sizesInfo.strip("()").split(", ")
+                                    x_coord, y_coord = coordsInfo.strip("()").split(", ")
+
+                                    data.update(
+                                        {
+                                            name: {
+                                                "sizes": [int(x_size), int(y_size)],
+                                                "coords": [int(x_coord), int(y_coord)],
+                                                "health": healthInfo,
+                                                "scale": scaleInfo,
+                                                "animations": [],
+                                                "image": "images/built_in_images/{}.png".format(name),
+                                                "lights": {},
+                                            }
+                                        }
+                                    )
                                     with open("items/info.json", "w") as json_file_w:
                                         json.dump(data, json_file_w)
                     elif key == pygame.K_BACKSPACE:
                         if _memory["text"]["name"][-1] != " " and _memory["text"]["images"]["not_clickables"]:
                             _memory["text"]["images"]["not_clickables"].popitem()
-                        
+
                         _memory["text"]["name"] = _memory["text"]["name"][:-1]
                     elif key == pygame.K_UP:
                         cls.selam += 37
@@ -286,32 +340,39 @@ def update(tiles):
                     elif key == pygame.K_LEFT:
                         cls.selam += 1
                     else:
-                        cls.text(_memory["text"]["name"] + event.unicode, 1, (5, 30), (255, 255, 255), name, font = "normal_anim")
-                    #----------------------------------------------------------------------------------------------------
+                        cls.text(
+                            _memory["text"]["name"] + event.unicode,
+                            1,
+                            (5, 30),
+                            (255, 255, 255),
+                            name,
+                            font="normal_anim",
+                        )
+                    # --------------------------------------------------------------------------------------------------
             elif event.type == pygame.MOUSEMOTION:
                 cls.cursor_pos = event.pos
 
                 if event.buttons[0]:
-                    if type(_memory["condition"]) == int:
+                    if isinstance(_memory["condition"], int):
                         if is_cursor_in_surface(x_result, y_result):
                             _memory["scroll"][0] = x_result
                     elif _memory["condition"].startswith("resizing"):
                         if win_name:
                             cls.delete_images([_memory["coords"]], win_name)
 
-                        if _memory["condition"] == "resizing_l": 
+                        if _memory["condition"] == "resizing_l":
                             x_size -= event.rel[0]
                             _memory["win_coords"][0] += event.rel[0]
                             _memory["coords"] = tuple(_memory["win_coords"])
-                        elif _memory["condition"] == "resizing_r": 
+                        elif _memory["condition"] == "resizing_r":
                             x_size = x_result
-                        elif _memory["condition"] == "resizing_t": 
+                        elif _memory["condition"] == "resizing_t":
                             y_size -= event.rel[1]
                             _memory["win_coords"][1] += event.rel[1]
                             _memory["coords"] = tuple(_memory["win_coords"])
                         else:
                             y_size = y_result
-                    
+
                         if min_sizes[0] > x_size:
                             x_size = min_sizes[0]
                         elif min_sizes[1] > y_size:
@@ -333,9 +394,14 @@ def update(tiles):
                             _memory["condition"] = "idle"
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if is_cursor_in_surface(x_result, y_result):
-                    if event.button == 1: 
+                    if event.button == 1:
                         collision_area = _memory["text"]["images"]["clickables"]
-                        collision = Physic.rect_collision((x_result - _memory["scroll"][0], y_result - _memory["scroll"][1]), (1, 1), collision_area, True)
+                        collision = Physic.rect_collision(
+                            (x_result - _memory["scroll"][0], y_result - _memory["scroll"][1]),
+                            (1, 1),
+                            collision_area,
+                            True,
+                        )
 
                         if collision:
                             if win_name:
@@ -350,10 +416,14 @@ def update(tiles):
                                 _memory["condition"] = "resizing_r"
                             elif y_result > 0 and y_result < 10:
                                 _memory["condition"] = "resizing_t"
-                            elif y_result > y_size - 10 and y_result < y_size: 
+                            elif y_result > y_size - 10 and y_result < y_size:
                                 _memory["condition"] = "resizing_b"
-                    elif len(_memory["text"]["images"]["clickables"].keys()) or len(_memory["text"]["images"]["not_clickables"].keys()):
-                        sum = list(_memory["text"]["images"]["clickables"].keys()) + list(_memory["text"]["images"]["not_clickables"].keys())
+                    elif len(_memory["text"]["images"]["clickables"].keys()) or len(
+                        _memory["text"]["images"]["not_clickables"].keys()
+                    ):
+                        sum = list(_memory["text"]["images"]["clickables"].keys()) + list(
+                            _memory["text"]["images"]["not_clickables"].keys()
+                        )
                         if event.button == 4:
                             if _memory["scroll"][1] + 15 <= sum[0][1]:
                                 _memory["scroll"][1] += 15
@@ -371,9 +441,9 @@ def update(tiles):
                     a = _memory["collision"]
                     _memory["collision"] = None
                     return (a, _memory["coords"])
-        #-----------------------------------------------------------------
+        # -----------------------------------------------------------------
 
-        #-The "type_" Parameter Setting-------------------------------------------------------------------------------------------------------------------------------------------------------
+        # -The "type_" Parameter Setting--------------------------------------------------------------------------
         if type_ == "basic":
             _memory["surface"].fill(color)
 
@@ -406,14 +476,16 @@ def update(tiles):
                 cene, bene = _memory["surface_in_in"].get_size()
 
                 if _memory["condition"] == "waked_up":
-                    _memory["surface_in_in"].blit(image_.lightCursor_4x, (x_result, y_result) - np.array(lightCursor_size) * 2)
+                    _memory["surface_in_in"].blit(
+                        image_.lightCursor_4x, (x_result, y_result) - np.array(lightCursor_size) * 2
+                    )
                 elif _memory["condition"] == "idle":
                     _memory["surface_in"].blit(image_.lightCursor_2x, np.array((x_result, y_result)) - lightCursor_size)
-                
+
                 pygame.draw.rect(_memory["surface_in_in"], color, (2, 2, cene - 4, bene - 4))
-                
+
                 character_blit(name, _memory["surface_in_in"])
-                
+
                 x, y = ((x_result, y_result) - np.array(size) // 2) // 64 + 5
                 if x < 2 or x > 8:
                     if x < 2:
@@ -435,18 +507,20 @@ def update(tiles):
             _memory["surface"].fill(color)
             _memory["surface"].blit(image_.lightCursor, (x_result, y_result) - np.array(lightCursor_size) // 2)
             _memory["surface"].blit(_memory["surface_in"], (3, 3))
-        #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------
 
         if win_name:
             clickable = True if type_ == "button" else False
-            cls.add_images({_memory["coords"]: _memory["surface"]}, win_name, clickable = clickable)
+            cls.add_images({_memory["coords"]: _memory["surface"]}, win_name, clickable=clickable)
         else:
             return _memory["surface"], _memory["coords"]
 
     @classmethod
-    def text(cls, text: str, scale: int, coords: tuple or list, color: tuple or list, win_name: str, font: str = "arial") -> None:
+    def text(
+        cls, text: str, scale: int, coords: tuple or list, color: tuple or list, win_name: str, font: str = "arial"
+    ) -> None:
         """
-        This function allows to write text in the window. 
+        This function allows to write text in the window.
 
         Examples of the Parameters;
         ---------------------------
@@ -458,17 +532,24 @@ def update(tiles):
         >>> font = "times new roman"
         """
 
-        try: 
+        try:
             cls.memory[win_name]
         except KeyError:
-            raise KeyError("{name} not found. You must set {name} first.".format(name = win_name))
+            raise KeyError(
+                f"{win_name} not found. You must set {win_name} first."
+            ) from None
 
         if cls.memory[win_name]["text"]["name"] != text:
             compeleted_text = {}
             x_coor, y_coor = coords
 
             if font.endswith("anim"):
-                anim = Animation("../game_engine/ui/images/pixelFont_{}/latin_capital_letter_a".format(font.lower()), 3, scale, stop_iteration = True)
+                anim = Animation(
+                    "../game_engine/ui/images/pixelFont_{}/latin_capital_letter_a".format(font.lower()),
+                    3,
+                    scale,
+                    stop_iteration=True,
+                )
                 raw_text = [*text]
                 for index in range(len(raw_text)):
                     letter = raw_text[index]
@@ -481,8 +562,10 @@ def update(tiles):
                         boolean = False
 
                     if boolean:
-                        path = "../game_engine/ui/images/pixelFont_{}/{}".format(font.lower(), name(letter).lower().replace(" ", "_"))
-                        anim = Animation(path, 3, scale, stop_iteration = True)
+                        path = "../game_engine/ui/images/pixelFont_{}/{}".format(
+                            font.lower(), name(letter).lower().replace(" ", "_")
+                        )
+                        anim = Animation(path, 3, scale, stop_iteration=True)
 
                         compeleted_text.update({(x_coor, y_coor): anim})
                         x_coor += anim.image_size[0]

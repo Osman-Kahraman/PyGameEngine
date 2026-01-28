@@ -10,6 +10,7 @@ internal implementation details.
 """
 
 import repackage
+
 repackage.up()
 
 # --- Core UI Components ---

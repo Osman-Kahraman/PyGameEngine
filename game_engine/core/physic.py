@@ -1,43 +1,46 @@
-from typing import overload
-import pygame, repackage
 from collections import namedtuple
+from typing import overload
 
-from ui.images.init import *
+import pygame
+import repackage
 from core.animation import Animation
+
 repackage.up()
-from event import *
 
 pygame.init()
 
+
 class Physic:
     """
-Physic
-======
+    Physic
+    ======
 
-This class performs calculations based on simple physics laws. 
+    This class performs calculations based on simple physics laws.
 
-Basic Usage of the Class:
--------------------------
->>> Physic.throwing(...) #You must set the variables.
->>> Physic.pixel_perfect_collision(...) #You must set the variables.
->>> Physic.rect_collision(...) #You must set the variables.
+    Basic Usage of the Class:
+    -------------------------
+    >>> Physic.throwing(...) #You must set the variables.
+    >>> Physic.pixel_perfect_collision(...) #You must set the variables.
+    >>> Physic.rect_collision(...) #You must set the variables.
 
-The Class Variable;
--------------------
->>> physic_var.gen_obj #You can only use if the variable was set.  
+    The Class Variable;
+    -------------------
+    >>> physic_var.gen_obj #You can only use if the variable was set.
 
-Function(s);/
-`pixel_perfect_collision`
-`rect_collision`
-`throwing`
+    Function(s);/
+    `pixel_perfect_collision`
+    `rect_collision`
+    `throwing`
     """
 
     Result = namedtuple("Result", "item_collision_coords item_coords item_index item_size side overlap_rect")
 
     @classmethod
-    def pixel_perfect_collision(cls, coords: tuple, image: pygame.image, collision_items: dict, col_ret_in_list: bool = False, *args, **kwds) -> namedtuple:
+    def pixel_perfect_collision(
+        cls, coords: tuple, image: pygame.image, collision_items: dict, col_ret_in_list: bool = False, *args, **kwds
+    ) -> namedtuple:
         """
-        It makes collision test between the image and the collision items, you can set return result visa versa. 
+        It makes collision test between the image and the collision items, you can set return result visa versa.
 
         Examples of the Parameters;
         ---------------------------
@@ -50,13 +53,17 @@ Function(s);/
         if image:
             img_mask = pygame.mask.from_surface(image)
 
-        if type(collision_items) != dict:
+        if not isinstance(collision_items, dict):
             raise TypeError(f"collision_items parameter type must be a dict, not {type(collision_items)}")
 
         for item_coords in collision_items.keys():
             item = collision_items[item_coords]["image"] if "key" in kwds.keys() else collision_items[item_coords]
 
-            mask = pygame.mask.from_surface(item.frame_image) if isinstance(item, Animation) else pygame.mask.from_surface(item)
+            mask = (
+                pygame.mask.from_surface(item.frame_image)
+                if isinstance(item, Animation)
+                else pygame.mask.from_surface(item)
+            )
 
             if col_ret_in_list:
                 offset = (int(x_coor - item_coords[0]), int(y_coor - item_coords[1]))
@@ -81,21 +88,16 @@ Function(s);/
                     if self_rect.centery < item_rect.centery:
                         side = "top"
                     else:
-                        side = "bottom" 
+                        side = "bottom"
 
                 return cls.Result(
-                    result,
-                    item_coords,
-                    list(collision_items.keys()).index(item_coords),
-                    item.get_size(),
-                    side,
-                    overlap
+                    result, item_coords, list(collision_items.keys()).index(item_coords), item.get_size(), side, overlap
                 )
 
     @classmethod
     def rect_collision(cls, coords: tuple, size: tuple, collision_items: dict, *args, **kwds) -> namedtuple:
         """
-        It makes collision test between the image and the collision items, you can set return result visa versa. 
+        It makes collision test between the image and the collision items, you can set return result visa versa.
 
         Examples of the Parameters;
         ---------------------------
@@ -105,57 +107,43 @@ Function(s);/
         """
 
         if type(collision_items) is not dict:
-            raise TypeError(
-                f"collision_items parameter type must be dict, not {type(collision_items)}"
-            )
+            raise TypeError(f"collision_items parameter type must be dict, not {type(collision_items)}")
 
         x_coor, y_coor = coords
 
         self_rect = pygame.Rect(x_coor, y_coor, size[0], size[1])
 
         for idx, item_coords in enumerate(collision_items.keys()):
-            item = (
-                collision_items[item_coords]["image"]
-                if "key" in kwds
-                else collision_items[item_coords]
-            )
+            item = collision_items[item_coords]["image"] if "key" in kwds else collision_items[item_coords]
 
             try:
                 item_size = item.get_size()
             except AttributeError:
                 item_size = (int(item[0]), int(item[1]))
 
-            item_rect = pygame.Rect(
-                item_coords[0],
-                item_coords[1],
-                item_size[0],
-                item_size[1]
-            )
+            item_rect = pygame.Rect(item_coords[0], item_coords[1], item_size[0], item_size[1])
 
             if self_rect.colliderect(item_rect):
                 overlap = self_rect.clip(item_rect)
 
                 # collision'un item içindeki lokal koordinatı
-                local_coords = (
-                    overlap.x - item_rect.x,
-                    overlap.y - item_rect.y
-                )
+                local_coords = (overlap.x - item_rect.x, overlap.y - item_rect.y)
 
                 return cls.Result(
-                    local_coords,        # item_collision_coords
-                    item_coords,         # item_coords
-                    idx,                 # item_index
-                    item_size,           # item_size
-                    "",                  # side
-                    overlap              # overlap_rect
+                    local_coords,  # item_collision_coords
+                    item_coords,  # item_coords
+                    idx,  # item_index
+                    item_size,  # item_size
+                    "",  # side
+                    overlap,  # overlap_rect
                 )
 
         return None
 
     @overload
-    def throwing(self, speed: int or float, velocity: int or float) -> tuple: 
+    def throwing(self, speed: int or float, velocity: int or float) -> tuple:
         """
-        When this function had been set, it will calculate the condition and return the coords steps using generator. 
+        When this function had been set, it will calculate the condition and return the coords steps using generator.
 
         Examples of the Parameters;
         ---------------------------
@@ -178,9 +166,9 @@ Function(s);/
             while True:
                 gravity_ratio = yield move_value
 
-                if not _average_countdown: 
+                if not _average_countdown:
                     _average //= gravity_ratio
-                    foo //= (gravity_ratio * 2)
+                    foo //= gravity_ratio * 2
                     if not foo:
                         raise StopIteration("Velocity is over. ")
 
@@ -191,7 +179,7 @@ Function(s);/
                 else:
                     _average_countdown -= 1
 
-                    try: 
+                    try:
                         bar[-1]
                     except IndexError:
                         pass
@@ -204,7 +192,7 @@ Function(s);/
             cls.gen_obj = velocity_calculator(velocity)
             next(cls.gen_obj)
 
-        try:        
+        try:
             x_result, y_result = (speed, cls.gen_obj.send(2))
         except RuntimeError:
             del cls.gen_obj

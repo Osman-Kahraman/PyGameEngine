@@ -1,49 +1,49 @@
-import pygame, repackage, math
-from pygame import gfxdraw
+import math
 
-from ui.images.init import *
-repackage.up()
-from event import *
+import pygame
+from pygame import gfxdraw
 
 pygame.init()
 
+
 class Light:
     """
-Light
-=====
+    Light
+    =====
 
-Creates a light source. 
+    Creates a light source.
 
-Basic Usage of the Class:
--------------------------
->>> light_system = Light(...) #You must set the light size.
->>> light_system.render(...) #You must set the coordinates and images.
+    Basic Usage of the Class:
+    -------------------------
+    >>> light_system = Light(...) #You must set the light size.
+    >>> light_system.render(...) #You must set the coordinates and images.
 
-The Class Variable;
--------------------
->>> light_system.width #Width of the surface size. 
->>> light_system.height #Height of the surface size. 
->>> light_system.light_image #The default light image but you can change with monkey-patching. 
+    The Class Variable;
+    -------------------
+    >>> light_system.width #Width of the surface size.
+    >>> light_system.height #Height of the surface size.
+    >>> light_system.light_image #The default light image but you can change with monkey-patching.
 
-Function(s);/
-`segments_from_image`
-`screen_border_segments`
-`intersect`
-`visibility_polygon`
-`render`
+    Function(s);/
+    `segments_from_image`
+    `screen_border_segments`
+    `intersect`
+    `visibility_polygon`
+    `render`
     """
+
     def __init__(self, size) -> None:
         self.width, self.height = size
         self.darkness = pygame.Surface(size, pygame.SRCALPHA)
         try:
             image = pygame.image.load("../game_engine/ui/images/light.png").convert_alpha()
-        except:
+        except FileNotFoundError:
             image = pygame.image.load("game_engine/images/light.png").convert_alpha()
         self.light_image = pygame.transform.scale(image, size)
 
     def segments_from_image(self, image: pygame.image, pos: tuple) -> list:
         """
-        Turns segments from the given image for shadow effect. 
+        Turns segments from the given image for shadow effect.
 
         Examples of the Parameters;
         ---------------------------
@@ -58,15 +58,12 @@ Function(s);/
         for i in range(len(outline)):
             x1, y1 = outline[i]
             x2, y2 = outline[(i + 1) % len(outline)]
-            segs.append({
-                "a": {"x": x1 + pos[0], "y": y1 + pos[1]},
-                "b": {"x": x2 + pos[0], "y": y2 + pos[1]}
-            })
+            segs.append({"a": {"x": x1 + pos[0], "y": y1 + pos[1]}, "b": {"x": x2 + pos[0], "y": y2 + pos[1]}})
         return segs
 
     def screen_border_segments(self) -> list:
         """
-        Defines borders of the light. 
+        Defines borders of the light.
         """
 
         w, h = self.width, self.height
@@ -177,10 +174,7 @@ Function(s);/
             dx = math.cos(a)
             dy = math.sin(a)
 
-            ray = {
-                "a": (lx, ly),
-                "b": (lx + dx * 2000, ly + dy * 2000)
-            }
+            ray = {"a": (lx, ly), "b": (lx + dx * 2000, ly + dy * 2000)}
 
             closest = None
             for seg in segments:
@@ -218,35 +212,27 @@ Function(s);/
 
             is_inside = i_x + i_s_x > l_x and i_y + i_s_y > l_y and i_x < l_x + self.width and i_y < l_y + self.height
 
-            if is_inside: #optimizing: only works if image is inside the light
+            if is_inside:  # optimizing: only works if image is inside the light
                 clarify = (i_x - l_x, i_y - l_y)
 
                 segments += self.segments_from_image(image, clarify)
 
-        if len(segments) > 4: #if there is more segments except border
-            poly = self.visibility_polygon((self.width // 2, self.height // 2), segments) #Inserting the source in the middle coords
-            
+        if len(segments) > 4:  # if there is more segments except border
+            poly = self.visibility_polygon(
+                (self.width // 2, self.height // 2), segments
+            )  # Inserting the source in the middle coords
+
             mask_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
             mask_surf.fill((0, 0, 0, 0))
-            
-            if len(poly) >= 3:
-                gfxdraw.filled_polygon(
-                    mask_surf,
-                    poly,
-                    (255, 255, 255, 255)
-                )
 
-                small = pygame.transform.smoothscale(
-                    mask_surf,
-                    (self.width // 2, self.height // 2)
-                )
-                mask_surf = pygame.transform.smoothscale(
-                    small,
-                    (self.width, self.height)
-                )
+            if len(poly) >= 3:
+                gfxdraw.filled_polygon(mask_surf, poly, (255, 255, 255, 255))
+
+                small = pygame.transform.smoothscale(mask_surf, (self.width // 2, self.height // 2))
+                mask_surf = pygame.transform.smoothscale(small, (self.width, self.height))
 
             light_cut = self.light_image.copy()
-            light_cut.blit(mask_surf, (0, 0), special_flags = pygame.BLEND_RGBA_MULT)
+            light_cut.blit(mask_surf, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
 
             self.darkness.fill((0, 0, 0, 0))
             self.darkness.blit(light_cut, (0, 0))

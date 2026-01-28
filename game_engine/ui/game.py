@@ -1,8 +1,14 @@
-import importlib, repackage, pygame, numpy as np, os
+import importlib
+import os
+
+import numpy as np
+import pygame
+import repackage
 
 repackage.up()
-from package import *
 from event import pygame_
+from package import Camera
+
 
 class Window:
     def __init__(self, screen: pygame.Surface):
@@ -13,7 +19,7 @@ class Window:
 
         self.func_dict = {}
         self.func_implementer("tiles.py", "datas")
-        self.tile_dict_RAW, self.tile_dict = self.func_dict["tiles"].read(return_dict = "both")
+        self.tile_dict_RAW, self.tile_dict = self.func_dict["tiles"].read(return_dict="both")
         self.items = os.listdir("items")
         self.command = "game_start"
 
@@ -22,7 +28,7 @@ class Window:
                 self.command = "designer_start"
 
     def func_implementer(self, funcName: str, directory: str):
-        if not funcName.rstrip(".py") in self.func_dict.keys():
+        if funcName.rstrip(".py") not in self.func_dict.keys():
             spec = importlib.util.spec_from_file_location(funcName.rstrip(".py"), "{}/{}".format(directory, funcName))
             foo = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(foo)
@@ -32,9 +38,9 @@ class Window:
     def update(self):
         pygame_.get()
 
-        self.surface.fill((120, 107, 61)) #Green
+        self.surface.fill((120, 107, 61))  # Green
 
-        #-Controls----------------------------------------------------------------------------
+        # -Controls----------------------------------------------------------------------------
         for event in pygame_.event:
             e_type = event.type
 
@@ -47,9 +53,9 @@ class Window:
                     self.command = "game_close"
                 elif key == pygame.K_BACKQUOTE:
                     self.command = "designer_start"
-        #-------------------------------------------------------------------------------------
+        # -------------------------------------------------------------------------------------
 
-        #-Tile Dictionary Loading------------------------------------------------------------------------------------------
+        # -Tile Dictionary Loading-------------------------------------------------------------------------------------
         for key in sorted(self.tile_dict.keys()):
             for coords, image in self.tile_dict[key]["layers"].items():
                 item = self.tile_dict_RAW[str(key)]["layers"][str(coords)].replace(".png", ".py")
@@ -59,7 +65,7 @@ class Window:
                     func = self.func_dict[item.rstrip(".py")]
                     obj = func.update(self.tile_dict)
                     image, coords = obj[0]
-                    if len(obj) == 2: #if it's returning light
+                    if len(obj) == 2:  # if it's returning light
                         lght_img, lght_coords = obj[1]
                         lght_coords = (lght_coords[0] - Camera.coords[0], lght_coords[1] - Camera.coords[1])
                         self.surface.blit(lght_img, lght_coords)
@@ -68,16 +74,16 @@ class Window:
                     coords = coords - np.array(Camera.coords) // self.tile_dict[key]["parallax"]
                 else:
                     coords = np.array(coords) - Camera.coords
-                
+
                 abe = (coords[0] + image.get_width(), coords[1] + image.get_height())
                 foo = all((abe[0] >= 0, abe[1] >= 0))
                 bar = all((coords[0] <= self.surface_size[0], coords[1] <= self.surface_size[1]))
-                if foo and bar: #Game optimization: It does not render if the object is outside of the screen
+                if foo and bar:  # Game optimization: It does not render if the object is outside of the screen
                     self.surface.blit(image, coords)
-        #------------------------------------------------------------------------------------------------------------------
+        # -------------------------------------------------------------------------------------------------------------
 
-        #-Setting Screen Size------------------------------------------
+        # -Setting Screen Size------------------------------------------
         self.screen.blit(pygame.transform.scale(self.surface, self.screen_size), (0, 0))
-        #--------------------------------------------------------------
+        # --------------------------------------------------------------
 
         return self.command
