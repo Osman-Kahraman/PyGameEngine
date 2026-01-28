@@ -85,6 +85,7 @@ PyGameEngine/
 ├── README.md                   # Project documentation
 ├── requirements.txt            # Python dependencies
 ├── LICENSE                     # MIT License
+└── pyproject.toml              # Prettier / formatter config file
 ```
 
 ---
