@@ -6,6 +6,16 @@ Thank you for your interest in contributing! This guide will help you get starte
 
 This project uses Black, isort, and Ruff to maintain consistent code style and quality.
 
+## Requirements
+
+| Library     | Version |
+| ----------- | ------- |
+| `black`     | latest  |
+| `isort`     | latest  |
+| `ruff`      | latest  |
+
+---
+
 ### Format a specific directory
 If you are working only on the engine code, you can format just that folder:
 
