@@ -234,33 +234,45 @@ class Window:
         return converted
     
     def publish_game(self):
-        shutil.copytree("../game_1", "/Users/osmankahraman/Desktop/test", dirs_exist_ok = True)
-        shutil.copy("../game_engine/ui/game.py", "/Users/osmankahraman/Desktop/test")
-        shutil.copytree("../game_engine/core", "/Users/osmankahraman/Desktop/test/core", dirs_exist_ok = True)
-        shutil.copy("../game_engine/package.py", "/Users/osmankahraman/Desktop/test")
-        shutil.copy("../game_engine/event.py", "/Users/osmankahraman/Desktop/test")
-        shutil.copy("../game_engine/game_state.py", "/Users/osmankahraman/Desktop/test")
+        class Window_(QtWidgets.QWidget):
+            def __init__(self):
+                super().__init__()
+
+                msg = "Choose a location for the published game"
+                self.filePATH = QtWidgets.QFileDialog.getExistingDirectory(self, msg, os.getenv("HOME"))
+
+        app = QtWidgets.QApplication(sys.argv)
+
+        dest = Window_().filePATH
+        publish_dest = f"{dest}/game"
+
+        shutil.copytree(".", publish_dest, dirs_exist_ok = True)
+        shutil.copy("../game_engine/ui/game.py", publish_dest)
+        shutil.copytree("../game_engine/core", f"{publish_dest}/core", dirs_exist_ok = True)
+        shutil.copy("../game_engine/package.py", publish_dest)
+        shutil.copy("../game_engine/event.py", publish_dest)
+        shutil.copy("../game_engine/game_state.py", publish_dest)
         
-        os.makedirs("/Users/osmankahraman/Desktop/test/ui/images", exist_ok = True)
-        with open("/Users/osmankahraman/Desktop/test/ui/images/init.py", "w", encoding = "utf-8") as file:
+        os.makedirs(f"{publish_dest}/ui/images", exist_ok = True)
+        with open(f"{publish_dest}/ui/images/init.py", "w", encoding = "utf-8") as file:
             file.write("""
 class image_:
     pass""")
             
-        os.makedirs("/Users/osmankahraman/Desktop/test/game_engine/items", exist_ok = True)
-        shutil.copy("../game_engine/items/template.py", "/Users/osmankahraman/Desktop/test/game_engine/items")
+        os.makedirs(f"{publish_dest}/game_engine/items", exist_ok = True)
+        shutil.copy("../game_engine/items/template.py", f"{publish_dest}/game_engine/items")
 
-        os.makedirs("/Users/osmankahraman/Desktop/test/game_engine/images", exist_ok = True)
-        shutil.copy("../game_engine/ui/images/light.png", "/Users/osmankahraman/Desktop/test/game_engine/images")
+        os.makedirs(f"{publish_dest}/game_engine/images", exist_ok = True)
+        shutil.copy("../game_engine/ui/images/light.png", f"{publish_dest}/game_engine/images")
 
-        with open("/Users/osmankahraman/Desktop/test/main.py", "w", encoding = "utf-8") as file:
+        with open(f"{publish_dest}/main.py", "w", encoding = "utf-8") as file:
             file.write("""
 import pygame
 
 timer = pygame.time.Clock()
 surface_size = (1366, 768)
 screen = pygame.display.set_mode(surface_size) #pygame.FULLSCREEN
-pygame.display.set_caption("game_1")
+pygame.display.set_caption("None")
 pygame.mouse.set_visible(False)
 
 from package import *
