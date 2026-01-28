@@ -35,7 +35,10 @@ Function(s);/
     def __init__(self, size) -> None:
         self.width, self.height = size
         self.darkness = pygame.Surface(size, pygame.SRCALPHA)
-        image = pygame.image.load("../game_engine/ui/images/light.png").convert_alpha()
+        try:
+            image = pygame.image.load("../game_engine/ui/images/light.png").convert_alpha()
+        except:
+            image = pygame.image.load("game_engine/images/light.png").convert_alpha()
         self.light_image = pygame.transform.scale(image, size)
 
     def segments_from_image(self, image: pygame.image, pos: tuple) -> list:

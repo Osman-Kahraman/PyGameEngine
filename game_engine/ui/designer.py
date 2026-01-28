@@ -1,4 +1,4 @@
-import repackage, sys, numpy as np, os, json
+import repackage, sys, numpy as np, os, json, shutil
 from PIL import Image
 from PyQt5 import QtWidgets
 
@@ -232,6 +232,54 @@ class Window:
         converted = (int(converted[0]), int(converted[1]))
 
         return converted
+    
+    def publish_game(self):
+        shutil.copytree("../game_1", "/Users/osmankahraman/Desktop/test", dirs_exist_ok = True)
+        shutil.copy("../game_engine/ui/game.py", "/Users/osmankahraman/Desktop/test")
+        shutil.copytree("../game_engine/core", "/Users/osmankahraman/Desktop/test/core", dirs_exist_ok = True)
+        shutil.copy("../game_engine/package.py", "/Users/osmankahraman/Desktop/test")
+        shutil.copy("../game_engine/event.py", "/Users/osmankahraman/Desktop/test")
+        shutil.copy("../game_engine/game_state.py", "/Users/osmankahraman/Desktop/test")
+        
+        os.makedirs("/Users/osmankahraman/Desktop/test/ui/images", exist_ok = True)
+        with open("/Users/osmankahraman/Desktop/test/ui/images/init.py", "w", encoding = "utf-8") as file:
+            file.write("""
+class image_:
+    pass""")
+            
+        os.makedirs("/Users/osmankahraman/Desktop/test/game_engine/items", exist_ok = True)
+        shutil.copy("../game_engine/items/template.py", "/Users/osmankahraman/Desktop/test/game_engine/items")
+
+        os.makedirs("/Users/osmankahraman/Desktop/test/game_engine/images", exist_ok = True)
+        shutil.copy("../game_engine/ui/images/light.png", "/Users/osmankahraman/Desktop/test/game_engine/images")
+
+        with open("/Users/osmankahraman/Desktop/test/main.py", "w", encoding = "utf-8") as file:
+            file.write("""
+import pygame
+
+timer = pygame.time.Clock()
+surface_size = (1366, 768)
+screen = pygame.display.set_mode(surface_size) #pygame.FULLSCREEN
+pygame.display.set_caption("game_1")
+pygame.mouse.set_visible(False)
+
+from package import *
+import game
+
+game_ = game.Window(screen)
+
+command = "game_start"
+while command:
+    if command.endswith("start"): 
+        command = game_.update()
+    else:
+        break
+
+    pygame.display.update()
+
+    timer.tick(60) #FPS Limit
+
+pygame.quit()""")
 
     #-Display----------------------------------------------------------------------------------------------
     def update(self):
@@ -452,6 +500,17 @@ Animation Amount: {}""".format(self.objectSize, self.objectCoords, self.objectHe
                 self.drag_and_dropping = tools_surf
         #------------------------------------------------------------------------------------------------------------------
 
+        #-Game Publishing------------------------------------------------------------------------
+        publish_surf, publish_coor = UI.window("publish_surf", (self.screen.get_size()[0] // 2 - 80, 10), (160, 70), (30, 30, 30), 2)
+        UI.window("publish_button", (2, 2), (140, 50), (50, 50, 50), "button", win_name = "publish_surf")
+        UI.text("Publish Game", 18, (13, 13), (200, 200, 200), win_name = "publish_button")
+        try:
+            self.screen.blit(publish_surf, publish_coor)
+        except TypeError:
+            if publish_surf.item_coords == (2, 2):
+                self.publish_game()
+        #----------------------------------------------------------------------------------------
+
         #-Layers Window--------------------------------------------------------------------------------------------------------------------------------
         layers_surf, layers_coor = UI.window("layers", tuple(np.array(self.screen.get_size()) - 200), (200, 150), (30, 30, 30), 2)
         UI.window("hit_box_button", (5, 5), (20, 20), (110, 110, 110), "button", win_name = "layers")
@@ -525,7 +584,7 @@ Animation Amount: {}""".format(self.objectSize, self.objectCoords, self.objectHe
             anim_folders = "{}_anim_folders".format(self.objectName)
             anim_frames = "{}_anim_frames".format(self.objectName)
 
-            animator_surf, animator_coor = UI.window("animator", (340, 0), (800, 200), (30, 30, 30), 2)
+            animator_surf, animator_coor = UI.window("animator", (340, self.screen.get_size()[1] - 200), (800, 200), (30, 30, 30), 2)
             UI.window("anim_close_b", (5, 5), (20, 20), (0, 30, 5), "button", win_name = "animator")
             UI.add_images({
                 (0, 0): image_.closeButton
