@@ -781,7 +781,7 @@ Animation Amount: {}""".format(
             light_editor_surf, light_editor_coor = UI.window("light_editor", coords, (230, 170), (30, 30, 30), 2)
             UI.window("light_editor_close_button", (5, 5), (20, 20), (0, 30, 5), "button", win_name="light_editor")
             UI.add_images({(0, 0): image_.closeButton}, "light_editor_close_button")
-            UI.window(scrollbar_area, (5, 25), (200, 120), (30, 30, 30), text_bool=True, win_name="light_editor")
+            UI.window(scrollbar_area, (5, 25), (200, 120), (30, 30, 30), text_bool=False, win_name="light_editor")
             UI.text("R\nG\nB", 25, (70, 12), (200, 200, 200), scrollbar_area, font="impact")
             UI.window("R", (100, 20), (100, 20), (200, 200, 200), "scrollbar", win_name=scrollbar_area)
             UI.window("G", (100, 50), (100, 20), (200, 200, 200), "scrollbar", win_name=scrollbar_area)
