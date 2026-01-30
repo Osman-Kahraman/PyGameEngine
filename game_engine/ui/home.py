@@ -4,13 +4,13 @@ import sys
 
 import numpy as np
 import pygame
-import repackage
 from PyQt5 import QtWidgets
-from ui.images.init import image_
 
-repackage.up()
-from event import pygame_
-from package import UI
+from .. import ROOT_DIR
+from ..ui.images import IMAGES
+
+from ..event import pygame_
+from ..package import UI
 
 
 class Window:
@@ -20,24 +20,29 @@ class Window:
         self.screen_mid = tuple(np.array(self.surface_sizes) // 2)
         self.cursor_pos = self.screen_mid
         self.cursor_bool = True
-        self.cursor = image_.normalCursor
+        self.cursor = IMAGES.normalCursor
         self.file_action = False
         self.open_action = False
         self.command = "home_start"
         self.blur_screen = pygame.Surface((1366, 768)).convert_alpha()
 
         # -README---------------------------------------------------------------------
-        with open("game_engine/ui/texts/description.txt", "r", encoding="utf-8") as file:
+        with open(f"{os.path.dirname(__file__)}/texts/description.txt", "r", encoding="utf-8") as file:
             self.desc = "".join(file.readlines())
-        with open("game_engine/ui/texts/features.txt", "r", encoding="utf-8") as file:
+        with open(f"{os.path.dirname(__file__)}/texts/features.txt", "r", encoding="utf-8") as file:
             self.features = "".join(file.readlines())
-        with open("game_engine/ui/texts/structure.txt", "r", encoding="utf-8") as file:
+        with open(f"{os.path.dirname(__file__)}/texts/structure.txt", "r", encoding="utf-8") as file:
             self.structure = "".join(file.readlines())
         # ----------------------------------------------------------------------------
 
         # -History---------------------------------------------------------------------------
-        with open("game_engine/history.json", "r") as json_file:
-            self.history = json.loads(json_file.read())
+        try:
+            with open(f"{ROOT_DIR}/history.json", "r") as json_file:
+                self.history = json.loads(json_file.read())
+        except FileNotFoundError:
+            # couldn't find file creating a new one
+            with open(f"{ROOT_DIR}/history.json", "w") as json_file:
+                json.dump({}, json_file)
         # -----------------------------------------------------------------------------------
 
     def update(self):
@@ -61,21 +66,21 @@ class Window:
                         UI.listen("action_2") == "waked_up",
                     ]
                 ):
-                    self.cursor = image_.choosingCursor
+                    self.cursor = IMAGES.choosingCursor
                 else:
-                    self.cursor = image_.normalCursor
+                    self.cursor = IMAGES.normalCursor
             elif e_type == pygame.MOUSEBUTTONDOWN:
                 e_button = event.button
 
                 if e_button == 1:
-                    self.cursor = image_.normalCursorL
+                    self.cursor = IMAGES.normalCursorL
                 elif e_button == 3:
-                    self.cursor = image_.normalCursorR
+                    self.cursor = IMAGES.normalCursorR
             elif e_type == pygame.MOUSEBUTTONUP:
                 self.cursor = (
-                    image_.normalCursor
-                    if self.cursor == image_.normalCursorL or self.cursor == image_.normalCursorR
-                    else image_.choosingCursor
+                    IMAGES.normalCursor
+                    if self.cursor == IMAGES.normalCursorL or self.cursor == IMAGES.normalCursorR
+                    else IMAGES.choosingCursor
                 )
         # -------------------------------------------------------------------------------------------
 
@@ -96,7 +101,7 @@ class Window:
 
         c = UI.window("image", (1356 // 2 + 330, 380), (350, 350), (30, 30, 30), 2)
         self.surface.blit(c[0], c[1])
-        UI.add_images({(0, 0): image_.ditheredPysnake}, "image")
+        UI.add_images({(0, 0): IMAGES.ditheredPysnake}, "image")
 
         d = UI.window("e-mail", (1356 // 2 + 40, 380), (280, 60), (30, 30, 30), 2)
         self.surface.blit(d[0], d[1])
@@ -201,7 +206,7 @@ class Window:
             else:
                 pass
 
-        self.surface.blit(image_.pygameSnake, (self.screen_mid[0] - (image_.pygameSnake.get_size()[0] // 2), 0))
+        self.surface.blit(IMAGES.pygameSnake, (self.screen_mid[0] - (IMAGES.pygameSnake.get_size()[0] // 2), 0))
         # --------------------------------------------------------------------------------------------------------
 
         # -Cursor----------------------------
