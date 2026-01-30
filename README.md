@@ -42,6 +42,8 @@ pip install -r requirements.txt
 ## Project Structure
 
 ```
+
+
 PyGameEngine/
 ├── game_1/                     # Example game
 │   ├── datas/                  # Game entities & world objects

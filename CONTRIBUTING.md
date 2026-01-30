@@ -41,5 +41,17 @@ python3 -m isort game_engine/
 python3 -m ruff check game_engine/
 ```
 
+## To visualise the show processing functions call 
+```bash
+python -m pstats profile.stats
+```
+then 
+
+```commandline
+sort time
+stats 20
+```
+
+
 > **Note**: Some files may intentionally use dynamic imports or exec().
 In such cases, inline ignores like # noqa: F401 are acceptable.
