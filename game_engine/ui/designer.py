@@ -5,16 +5,14 @@ import sys
 
 import numpy as np
 import pygame
-import repackage
 from PIL import Image
 from PyQt5 import QtWidgets
-from ui.images.init import image_
 
 import game_1.datas.tiles as tiles
 
-repackage.up()
-from event import pygame_
-from package import UI, Animation, Camera, Physic
+from ..event import pygame_
+from .images import IMAGES
+from ..package import UI, Animation, Camera, Physic
 
 
 class Window:
@@ -53,7 +51,7 @@ class Window:
 
         self.animation_command = "pause"
 
-        self.cursor = image_.normalCursor
+        self.cursor = IMAGES.normalCursor
         self.cursor_pos = np.array(self.screen.get_size()) // 2
 
         self.animation_ = Animation("../game_engine/ui/images/animationTimer", 1, 6)
@@ -101,19 +99,19 @@ class Window:
                     x += 5
             if x + image.get_size()[0] >= 300:
                 x = 10
-                y += image_.closeFolder.get_size()[1]
+                y += IMAGES.closeFolder.get_size()[1]
 
             return (x, y)
 
         for image_name in os.listdir("images/built_in_images"):
             if image_name != ".DS_Store":
                 if not image_name.endswith(".png"):
-                    x, y = x_collision(image_.closeFolder, x, y)
-                    collision = Physic.pixel_perfect_collision((x, y), image_.closeFolder, self.tools_dict, key=True)
+                    x, y = x_collision(IMAGES.closeFolder, x, y)
+                    collision = Physic.pixel_perfect_collision((x, y), IMAGES.closeFolder, self.tools_dict, key=True)
                     if collision:
                         y = collision.item_coords[1] + self.tools_dict[collision.item_coords]["image"].get_size()[1]
 
-                    self.tools_dict.update({(x, y): {"image": image_.closeFolder, "dir_name": image_name}})
+                    self.tools_dict.update({(x, y): {"image": IMAGES.closeFolder, "dir_name": image_name}})
 
                     for tileImageName in os.listdir(f"images/built_in_images/{image_name}"):
                         img = pygame.image.load(f"images/built_in_images/{image_name}/{tileImageName}").convert_alpha()
@@ -289,11 +287,9 @@ class Window:
 
         os.makedirs(f"{publish_dest}/ui/images", exist_ok=True)
         with open(f"{publish_dest}/ui/images/init.py", "w", encoding="utf-8") as file:
-            file.write(
-                """
+            file.write("""
 class image_:
-    pass"""
-            )
+    pass""")
 
         os.makedirs(f"{publish_dest}/game_engine/items", exist_ok=True)
         shutil.copy("../game_engine/items/template.py", f"{publish_dest}/game_engine/items")
@@ -302,8 +298,7 @@ class image_:
         shutil.copy("../game_engine/ui/images/light.png", f"{publish_dest}/game_engine/images")
 
         with open(f"{publish_dest}/main.py", "w", encoding="utf-8") as file:
-            file.write(
-                """
+            file.write("""
 import pygame
 
 timer = pygame.time.Clock()
@@ -328,8 +323,7 @@ while command:
 
     timer.tick(60) #FPS Limit
 
-pygame.quit()"""
-            )
+pygame.quit()""")
 
     # -Display----------------------------------------------------------------------------------------------
     def update(self):
@@ -369,7 +363,7 @@ pygame.quit()"""
                         UI.listen("light_editor_open_button") == "waked_up",
                     ]
                 ):
-                    self.cursor = image_.choosingCursor
+                    self.cursor = IMAGES.choosingCursor
                 elif any(
                     [
                         UI.listen("frame_{}".format(i)) == "resizing_r"
@@ -377,22 +371,22 @@ pygame.quit()"""
                         for i in range(5)
                     ]
                 ):
-                    self.cursor = image_.extentCursorh
+                    self.cursor = IMAGES.extentCursorh
                 elif UI.listen("code_editor") == "waked_up":
-                    self.cursor = image_.textCursor
+                    self.cursor = IMAGES.textCursor
                 elif self.polygon_rects:
-                    self.cursor = image_.drawingCursor
+                    self.cursor = IMAGES.drawingCursor
                     self.polygon_rects.append(self.cursor_pos)
                 elif self.rects:
-                    self.cursor = image_.drawingCursor
+                    self.cursor = IMAGES.drawingCursor
                 else:
-                    self.cursor = image_.normalCursor
+                    self.cursor = IMAGES.normalCursor
             elif e_type == pygame.MOUSEBUTTONDOWN:
                 e_button = event.button
                 cursor_interaction = Physic.pixel_perfect_collision(self.cursor_pos, self.cursor, self.tileDictLocal)
 
                 if e_button == 1:
-                    self.cursor = image_.normalCursorL
+                    self.cursor = IMAGES.normalCursorL
 
                     if self.tileset_choosing:
                         self.polygon_rects.append(self.cursor_pos)
@@ -423,7 +417,7 @@ pygame.quit()"""
                             if event.pos[0] < self.screen.get_size()[0] - 200 or event.pos[1] > 350:
                                 self.tile_info_bool = False
                 elif e_button == 3:
-                    self.cursor = image_.normalCursorR
+                    self.cursor = IMAGES.normalCursorR
                     if cursor_interaction:
                         pop = self.converter(cursor_interaction.item_coords)
 
@@ -431,7 +425,7 @@ pygame.quit()"""
                         self.tile_dict[self.layer]["layers"].pop(pop)
                         self.tileDictLocal.clear()
             elif e_type == pygame.MOUSEBUTTONUP:
-                self.cursor = image_.normalCursor
+                self.cursor = IMAGES.normalCursor
 
                 if self.drag_and_dropping_bool:
                     foo = self.converter(self.cursor_pos)
@@ -533,13 +527,13 @@ Animation Amount: {}""".format(
             UI.window("info_name", (10, 10), (165, 30), (90, 90, 90), win_name="info")
             UI.text(self.objectName, 21, (5, 0), (170, 170, 170), "info_name", font="impact")
             UI.window("code_editor_open_button", (5, 230), (175, 20), (110, 110, 110), "button", win_name="info")
-            UI.add_images({(0, 0): image_.codeEditorButton}, "code_editor_open_button")
+            UI.add_images({(0, 0): IMAGES.codeEditorButton}, "code_editor_open_button")
             UI.text("Code Editor", 13, (25, 5), (255, 255, 255), "code_editor_open_button")
             UI.window("light_editor_open_button", (5, 260), (80, 20), (110, 110, 110), "button", win_name="info")
-            UI.add_images({(0, 0): image_.lightEditorButton}, "light_editor_open_button")
+            UI.add_images({(0, 0): IMAGES.lightEditorButton}, "light_editor_open_button")
             UI.text("Light", 13, (25, 5), (255, 255, 255), "light_editor_open_button")
             UI.window("animator_open_button", (100, 260), (80, 20), (110, 110, 110), "button", win_name="info")
-            UI.add_images({(0, 0): image_.animatorButton}, "animator_open_button")
+            UI.add_images({(0, 0): IMAGES.animatorButton}, "animator_open_button")
             UI.text("Animator", 13, (25, 5), (255, 255, 255), "animator_open_button")
 
             try:
@@ -560,13 +554,13 @@ Animation Amount: {}""".format(
             self.screen.blit(tools_surf, tools_coor)
         except TypeError:  # It will trigger when one of the buttons clicked.
             if (
-                self.tools_dict[tools_surf.item_coords]["image"] == image_.closeFolder
-                or self.tools_dict[tools_surf.item_coords]["image"] == image_.openFolder
+                self.tools_dict[tools_surf.item_coords]["image"] == IMAGES.closeFolder
+                or self.tools_dict[tools_surf.item_coords]["image"] == IMAGES.openFolder
             ):
                 UI.delete_images((tools_surf.item_coords,), "tools")
 
                 self.tools_dict[tools_surf.item_coords]["image"] = (
-                    image_.openFolder if tools_surf.item_collision_coords[1] < 16 else image_.closeFolder
+                    IMAGES.openFolder if tools_surf.item_collision_coords[1] < 16 else IMAGES.closeFolder
                 )
 
                 self.tileset_choosing = tools_surf
@@ -593,7 +587,7 @@ Animation Amount: {}""".format(
             "layers", tuple(np.array(self.screen.get_size()) - 200), (200, 150), (30, 30, 30), 2
         )
         UI.window("hit_box_button", (5, 5), (20, 20), (110, 110, 110), "button", win_name="layers")
-        UI.add_images({(0, 0): image_.hitboxButton}, "hit_box_button")
+        UI.add_images({(0, 0): IMAGES.hitboxButton}, "hit_box_button")
         UI.window("new_layer_button", (160, 5), (20, 20), (110, 110, 110), "button", win_name="layers")
         UI.text("+", 18, (5, 0), (255, 255, 255), "new_layer_button")
         layerTuneCrop = 35
@@ -606,7 +600,7 @@ Animation Amount: {}""".format(
                 "button",
                 win_name="layers",
             )
-            UI.add_images({(0, 0): image_.layerButtonVisibility}, "layer{}_visibility".format(i))
+            UI.add_images({(0, 0): IMAGES.layerButtonVisibility}, "layer{}_visibility".format(i))
             UI.window(
                 "layer{}_parallax".format(i),
                 (25, layerTuneCrop),
@@ -615,7 +609,7 @@ Animation Amount: {}""".format(
                 "button",
                 win_name="layers",
             )
-            UI.add_images({(0, 0): image_.layerButtonParallax}, "layer{}_parallax".format(i))
+            UI.add_images({(0, 0): IMAGES.layerButtonParallax}, "layer{}_parallax".format(i))
             UI.window(
                 "layer{}_button".format(i), (45, layerTuneCrop), (135, 20), (30, 30, 30), "button", win_name="layers"
             )
@@ -676,7 +670,7 @@ Animation Amount: {}""".format(
             code_editor_surf, code_editor_coor = UI.window("code_editor", (350, 100), (800, 500), (30, 30, 30), 2)
             UI.window("code_editor_close_button", (5, 5), (20, 20), (30, 30, 30), "button", win_name="code_editor")
             UI.window(code_editor_name, (5, 30), (770, 430), (30, 30, 30), win_name="code_editor", text_bool=True)
-            UI.add_images({(0, 0): image_.closeButton}, "code_editor_close_button")
+            UI.add_images({(0, 0): IMAGES.closeButton}, "code_editor_close_button")
             try:
                 self.screen.blit(code_editor_surf, code_editor_coor)
             except TypeError:  # It will trigger when one of the buttons clicked.
@@ -693,7 +687,7 @@ Animation Amount: {}""".format(
                 "animator", (340, self.screen.get_size()[1] - 200), (800, 200), (30, 30, 30), 2
             )
             UI.window("anim_close_b", (5, 5), (20, 20), (0, 30, 5), "button", win_name="animator")
-            UI.add_images({(0, 0): image_.closeButton}, "anim_close_b")
+            UI.add_images({(0, 0): IMAGES.closeButton}, "anim_close_b")
             UI.window("anim_add_b", (760, 5), (20, 20), (0, 30, 5), "button", win_name="animator")
             UI.text("+", 21, (5, -5), (170, 170, 170), "anim_add_b", font="impact")
 
@@ -702,16 +696,16 @@ Animation Amount: {}""".format(
                 for coords, anim in enumerate(self.objectAnims):
                     anim = anim.split("/")[-1]
                     UI.window(anim, (coords * 86, 40), (76, 100), (130, 130, 130), "button", win_name=anim_folders)
-                    UI.add_images({(5, 5): image_.animFolder}, anim)
+                    UI.add_images({(5, 5): IMAGES.animFolder}, anim)
                     UI.text(anim, 14, (0, 80), (255, 255, 255), anim)
             elif self.animation_folder:
                 UI.delete_images(((5, 25),), "animator")
                 UI.window("anim_editor", (5, 25), (775, 160), (30, 30, 30), win_name="animator")
 
                 UI.window("edit_play_b", (350, 0), (30, 30), (0, 30, 5), "button", win_name="anim_editor")
-                UI.add_images({(5, 5): image_.playButton}, "edit_play_b")
+                UI.add_images({(5, 5): IMAGES.playButton}, "edit_play_b")
                 UI.window("edit_pause_b", (390, 0), (30, 30), (0, 30, 5), "button", win_name="anim_editor")
-                UI.add_images({(5, 5): image_.pauseButton}, "edit_pause_b")
+                UI.add_images({(5, 5): IMAGES.pauseButton}, "edit_pause_b")
                 UI.window(anim_frames, (30, 100), self.animation_.image_size, (66, 73, 73), win_name="anim_editor")
                 for i in range(len(os.listdir(self.animation_folder))):
                     UI.window(
@@ -780,7 +774,7 @@ Animation Amount: {}""".format(
             scrollbar_area = "{}_scrollbar_area".format(self.objectName)
             light_editor_surf, light_editor_coor = UI.window("light_editor", coords, (230, 170), (30, 30, 30), 2)
             UI.window("light_editor_close_button", (5, 5), (20, 20), (0, 30, 5), "button", win_name="light_editor")
-            UI.add_images({(0, 0): image_.closeButton}, "light_editor_close_button")
+            UI.add_images({(0, 0): IMAGES.closeButton}, "light_editor_close_button")
             UI.window(scrollbar_area, (5, 25), (200, 120), (30, 30, 30), text_bool=False, win_name="light_editor")
             UI.text("R\nG\nB", 25, (70, 12), (200, 200, 200), scrollbar_area, font="impact")
             UI.window("R", (100, 20), (100, 20), (200, 200, 200), "scrollbar", win_name=scrollbar_area)
@@ -814,7 +808,7 @@ Animation Amount: {}""".format(
         if self.tileset_choosing:
             if self.tileset_choosing.item_collision_coords[1] < 16:
                 coords = (
-                    self.tileset_choosing.item_coords[0] + image_.openFolder.get_size()[0],
+                    self.tileset_choosing.item_coords[0] + IMAGES.openFolder.get_size()[0],
                     self.tileset_choosing.item_coords[1],
                 )
                 window, coords = UI.window("folder_inside", coords, (200, 150), (230, 230, 230), 1)

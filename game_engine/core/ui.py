@@ -4,13 +4,11 @@ from unicodedata import name
 
 import numpy as np
 import pygame
-import repackage
-from core.animation import Animation
-from core.physic import Physic
-from ui.images.init import image_
+from .animation import Animation
+from .physic import Physic
+from ..ui.images import IMAGES
 
-repackage.up()
-from event import pygame_
+from ..event import pygame_
 
 pygame.init()
 
@@ -254,7 +252,7 @@ class UI:
 
         _memory = cls.memory[name]
         x_size, y_size = _memory["surface"].get_size()
-        lightCursor_size = image_.lightCursor.get_size()
+        lightCursor_size = IMAGES.lightCursor.get_size()
 
         def is_cursor_in_surface(x_result, y_result):
             foo = x_result >= 0 and y_result >= 0
@@ -278,8 +276,7 @@ class UI:
                     if key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_SHIFT:
                         name = cls.memory["info_name"]["text"]["name"]
                         with open(f"items/{name}.py", "w", encoding="utf-8") as file:
-                            file.write(
-                                f"""
+                            file.write(f"""
 # ruff: noqa
 import repackage
 
@@ -294,8 +291,7 @@ self = Temp("{name}")
 def update(tiles):
     exec('''
 {_memory["text"]["name"]}
-    ''')"""
-                            )
+    ''')""")
 
                             with open("items/info.json", "r") as json_file:
                                 data = json.loads(json_file.read())
@@ -465,7 +461,7 @@ def update(tiles):
             _memory["surface_in"].fill(tuple(map(color_fix_p, color)))
 
             if type_ == 1:
-                _memory["surface_in"].blit(image_.lightCursor_4x, (x_result, y_result) - np.array(lightCursor_size) * 2)
+                _memory["surface_in"].blit(IMAGES.lightCursor_4x, (x_result, y_result) - np.array(lightCursor_size) * 2)
                 cene, bene = _memory["surface_in"].get_size()
                 pygame.draw.rect(_memory["surface_in"], tuple(map(color_fix_m, color)), (2, 2, cene - 4, bene - 4))
 
@@ -476,10 +472,10 @@ def update(tiles):
 
                 if _memory["condition"] == "waked_up":
                     _memory["surface_in_in"].blit(
-                        image_.lightCursor_4x, (x_result, y_result) - np.array(lightCursor_size) * 2
+                        IMAGES.lightCursor_4x, (x_result, y_result) - np.array(lightCursor_size) * 2
                     )
                 elif _memory["condition"] == "idle":
-                    _memory["surface_in"].blit(image_.lightCursor_2x, np.array((x_result, y_result)) - lightCursor_size)
+                    _memory["surface_in"].blit(IMAGES.lightCursor_2x, np.array((x_result, y_result)) - lightCursor_size)
 
                 pygame.draw.rect(_memory["surface_in_in"], color, (2, 2, cene - 4, bene - 4))
 
@@ -504,7 +500,7 @@ def update(tiles):
                 character_blit(name, _memory["surface_in"])
 
             _memory["surface"].fill(color)
-            _memory["surface"].blit(image_.lightCursor, (x_result, y_result) - np.array(lightCursor_size) // 2)
+            _memory["surface"].blit(IMAGES.lightCursor, (x_result, y_result) - np.array(lightCursor_size) // 2)
             _memory["surface"].blit(_memory["surface_in"], (3, 3))
         # --------------------------------------------------------------------------------------------------------
 
@@ -530,6 +526,9 @@ def update(tiles):
         >>> win_name = "scuzz"
         >>> font = "times new roman"
         """
+
+        if cls.memory[win_name]["text"]["name"] == text:
+            return
 
         try:
             cls.memory[win_name]
