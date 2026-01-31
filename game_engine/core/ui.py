@@ -5,10 +5,10 @@ from unicodedata import name
 import numpy as np
 import pygame
 
-from ..event import pygame_
-from ..ui.images import IMAGES
-from .animation import Animation
-from .physic import Physic
+from game_engine.event import pygame_
+from game_engine.ui.images import IMAGES
+from game_engine.core.animation import Animation
+from game_engine.core.physic import Physic
 
 pygame.init()
 

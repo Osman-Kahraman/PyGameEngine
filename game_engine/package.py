@@ -10,11 +10,11 @@ internal implementation details.
 """
 
 # --- Core UI Components ---
-from .core.animation import Animation
-from .core.camera import Camera
-from .core.light import Light
-from .core.physic import Physic
-from .core.ui import UI
+from game_engine.core.animation import Animation
+from game_engine.core.camera import Camera
+from game_engine.core.light import Light
+from game_engine.core.physic import Physic
+from game_engine.core.ui import UI
 
 __all__ = [
     "Animation",

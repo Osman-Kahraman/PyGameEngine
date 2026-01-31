@@ -10,9 +10,9 @@ from PyQt5 import QtWidgets
 
 import game_1.datas.tiles as tiles
 
-from ..event import pygame_
-from ..package import UI, Animation, Camera, Physic
-from .images import IMAGES
+from game_engine.event import pygame_
+from game_engine.package import UI, Animation, Camera, Physic
+from game_engine.ui.images import IMAGES
 
 
 class Window:

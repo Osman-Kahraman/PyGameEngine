@@ -4,8 +4,8 @@ import os
 import numpy as np
 import pygame
 
-from ..event import pygame_
-from ..package import Camera
+from game_engine.event import pygame_
+from game_engine.package import Camera
 
 
 class Window:
