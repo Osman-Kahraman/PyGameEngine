@@ -29,13 +29,13 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Black (format check)
-        run: black --check game_engine/
+        run: python3 -m black --check game_engine/
 
       - name: isort (import check)
-        run: isort --check-only game_engine/
+        run: python3 -m isort --check-only game_engine/
 
       - name: Ruff (lint)
-        run: ruff check game_engine/
+        run: python3 -m ruff check game_engine/
 
       - name: Tests
         run: pytest || true
