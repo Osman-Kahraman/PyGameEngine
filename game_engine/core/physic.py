@@ -3,7 +3,7 @@ from typing import overload
 
 import pygame
 
-from .animation import Animation
+from game_engine.core.animation import Animation
 
 pygame.init()
 

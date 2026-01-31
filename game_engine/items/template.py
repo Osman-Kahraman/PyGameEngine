@@ -2,9 +2,9 @@ import json
 import time
 
 import pygame
-from event import pygame_  # noqa: F401
-from items.info import ITEMS
-from package import Animation, Camera, Light, Physic  # noqa: F401
+from game_engine.event import pygame_  # noqa: F401
+from game_engine.items.info import ITEMS
+from game_engine.package import Animation, Camera, Light, Physic  # noqa: F401
 
 attributeMemory = {}
 

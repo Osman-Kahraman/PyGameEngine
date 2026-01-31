@@ -45,7 +45,7 @@ while command:
 
     pygame.display.update()
 
-    timer.tick(60) # FPS Limit
+    timer.tick(0) # FPS Limit
     print(f"fps[{timer.get_fps() :.0f}]")
 
 pygame.quit()

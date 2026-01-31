@@ -6,10 +6,10 @@ import numpy as np
 import pygame
 from PyQt5 import QtWidgets
 
-from .. import ROOT_DIR
-from ..event import pygame_
-from ..package import UI
-from ..ui.images import IMAGES
+from game_engine import ROOT_DIR
+from game_engine.event import pygame_
+from game_engine.package import UI
+from game_engine.ui.images import IMAGES
 
 
 class Window:
@@ -37,11 +37,11 @@ class Window:
         # -History---------------------------------------------------------------------------
         try:
             with open(f"{ROOT_DIR}/history.json", "r") as json_file:
-                self.history = json.loads(json_file.read())
+                self.history = json.load(json_file)
         except FileNotFoundError:
             # couldn't find file creating a new one
             with open(f"{ROOT_DIR}/history.json", "w") as json_file:
-                json.dump({}, json_file)
+                json.dump({"prev_folders":[]}, json_file,indent=4)
         # -----------------------------------------------------------------------------------
 
     def update(self):
