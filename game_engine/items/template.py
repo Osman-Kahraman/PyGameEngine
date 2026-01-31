@@ -3,7 +3,7 @@ import time
 
 import pygame
 from game_engine.event import pygame_  # noqa: F401
-from game_engine.items.info import ITEMS
+from game_1.items.info import ITEMS
 from game_engine.package import Animation, Camera, Light, Physic  # noqa: F401
 
 attributeMemory = {}
