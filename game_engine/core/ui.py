@@ -287,7 +287,8 @@ class UI:
                     if key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_SHIFT:
                         name = cls.memory["info_name"]["text"]["name"]
                         with open(f"items/{name}.py", "w", encoding="utf-8") as file:
-                            file.write(f"""
+                            file.write(
+                                f"""
 # ruff: noqa
 import repackage
 
@@ -302,7 +303,8 @@ self = Temp("{name}")
 def update(tiles):
     exec('''
 {_memory["text"]["name"]}
-    ''')""")
+    ''')"""
+                            )
 
                             with open("items/info.json", "r") as json_file:
                                 data = json.loads(json_file.read())
