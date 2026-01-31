@@ -11,8 +11,8 @@ from PyQt5 import QtWidgets
 import game_1.datas.tiles as tiles
 
 from ..event import pygame_
-from .images import IMAGES
 from ..package import UI, Animation, Camera, Physic
+from .images import IMAGES
 
 
 class Window:

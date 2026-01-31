@@ -4,16 +4,16 @@ from unicodedata import name
 
 import numpy as np
 import pygame
-from .animation import Animation
-from .physic import Physic
-from ..ui.images import IMAGES
 
 from ..event import pygame_
+from ..ui.images import IMAGES
+from .animation import Animation
+from .physic import Physic
 
 pygame.init()
 
 _FONT_CACHE = {}
-_ANIM_CACHE = {}     # cache for animated characters
+_ANIM_CACHE = {}  # cache for animated characters
 _TEXT_SURFACE_CACHE = {}  # cache per-window text surfaces
 
 
@@ -522,9 +522,7 @@ def update(tiles):
             return _memory["surface"], _memory["coords"]
 
     @classmethod
-    def text(
-            cls, text: str, scale: int, coords: tuple, color: tuple, win_name: str, font: str = "arial"
-    ) -> None:
+    def text(cls, text: str, scale: int, coords: tuple, color: tuple, win_name: str, font: str = "arial") -> None:
 
         # --- 1. Ensure window exists ---
         if win_name not in cls.memory:

@@ -1,5 +1,6 @@
-import pygame
 import os
+
+import pygame
 
 # TODO: add caching
 

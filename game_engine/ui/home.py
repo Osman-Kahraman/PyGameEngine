@@ -7,10 +7,9 @@ import pygame
 from PyQt5 import QtWidgets
 
 from .. import ROOT_DIR
-from ..ui.images import IMAGES
-
 from ..event import pygame_
 from ..package import UI
+from ..ui.images import IMAGES
 
 
 class Window:
@@ -39,13 +38,13 @@ class Window:
         try:
             with open(f"{ROOT_DIR}/history.json", "r") as json_file:
                 self.history = json.loads(json_file.read())
-        #except FileNotFoundError:
+        # except FileNotFoundError:
         except (FileNotFoundError, json.JSONDecodeError):
             # couldn't find file or it's empty, creating a new one
             self.history = {"prev_folders": []}
             # couldn't find file creating a new one
             with open(f"{ROOT_DIR}/history.json", "w") as json_file:
-                #json.dump({}, json_file)
+                # json.dump({}, json_file)
                 json.dump(self.history, json_file)
 
         if "prev_folders" not in self.history:
