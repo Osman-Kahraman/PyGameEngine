@@ -172,9 +172,11 @@ class Window:
         if self.open_action:
             open_action_surf, open_action_coor = UI.window("open_action", (130, 83), (500, 100), (50, 50, 50), 1)
 
+            y_coord = 2
             for index, game_name in enumerate(self.history["prev_folders"]):
-                UI.window(f"game_button{index}", (2, 2), (490, 20), (50, 50, 50), "button", win_name="open_action")
+                UI.window(f"game_button{index}", (2, y_coord), (490, 20), (50, 50, 50), "button", win_name="open_action")
                 UI.text(game_name, 14, (3, 3), (200, 200, 200), win_name=f"game_button{index}")
+                y_coord += 21
 
             try:
                 self.surface.blit(open_action_surf, open_action_coor)
