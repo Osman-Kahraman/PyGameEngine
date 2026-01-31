@@ -3,11 +3,9 @@ import os
 
 import numpy as np
 import pygame
-import repackage
 
-repackage.up()
-from event import pygame_
-from package import Camera
+from ..event import pygame_
+from ..package import Camera
 
 
 class Window:

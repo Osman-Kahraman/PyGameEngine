@@ -4,15 +4,24 @@ from unicodedata import name
 
 import numpy as np
 import pygame
-import repackage
-from core.animation import Animation
-from core.physic import Physic
-from ui.images.init import image_
 
-repackage.up()
-from event import pygame_
+from ..event import pygame_
+from ..ui.images import IMAGES
+from .animation import Animation
+from .physic import Physic
 
 pygame.init()
+
+_FONT_CACHE = {}
+_ANIM_CACHE = {}  # cache for animated characters
+_TEXT_SURFACE_CACHE = {}  # cache per-window text surfaces
+
+
+def get_font(name, size):
+    key = (name, size)
+    if key not in _FONT_CACHE:
+        _FONT_CACHE[key] = pygame.font.SysFont(name, size)
+    return _FONT_CACHE[key]
 
 
 class UI:
@@ -254,7 +263,7 @@ class UI:
 
         _memory = cls.memory[name]
         x_size, y_size = _memory["surface"].get_size()
-        lightCursor_size = image_.lightCursor.get_size()
+        lightCursor_size = IMAGES.lightCursor.get_size()
 
         def is_cursor_in_surface(x_result, y_result):
             foo = x_result >= 0 and y_result >= 0
@@ -278,8 +287,7 @@ class UI:
                     if key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_SHIFT:
                         name = cls.memory["info_name"]["text"]["name"]
                         with open(f"items/{name}.py", "w", encoding="utf-8") as file:
-                            file.write(
-                                f"""
+                            file.write(f"""
 # ruff: noqa
 import repackage
 
@@ -294,8 +302,7 @@ self = Temp("{name}")
 def update(tiles):
     exec('''
 {_memory["text"]["name"]}
-    ''')"""
-                            )
+    ''')""")
 
                             with open("items/info.json", "r") as json_file:
                                 data = json.loads(json_file.read())
@@ -465,7 +472,7 @@ def update(tiles):
             _memory["surface_in"].fill(tuple(map(color_fix_p, color)))
 
             if type_ == 1:
-                _memory["surface_in"].blit(image_.lightCursor_4x, (x_result, y_result) - np.array(lightCursor_size) * 2)
+                _memory["surface_in"].blit(IMAGES.lightCursor_4x, (x_result, y_result) - np.array(lightCursor_size) * 2)
                 cene, bene = _memory["surface_in"].get_size()
                 pygame.draw.rect(_memory["surface_in"], tuple(map(color_fix_m, color)), (2, 2, cene - 4, bene - 4))
 
@@ -476,10 +483,10 @@ def update(tiles):
 
                 if _memory["condition"] == "waked_up":
                     _memory["surface_in_in"].blit(
-                        image_.lightCursor_4x, (x_result, y_result) - np.array(lightCursor_size) * 2
+                        IMAGES.lightCursor_4x, (x_result, y_result) - np.array(lightCursor_size) * 2
                     )
                 elif _memory["condition"] == "idle":
-                    _memory["surface_in"].blit(image_.lightCursor_2x, np.array((x_result, y_result)) - lightCursor_size)
+                    _memory["surface_in"].blit(IMAGES.lightCursor_2x, np.array((x_result, y_result)) - lightCursor_size)
 
                 pygame.draw.rect(_memory["surface_in_in"], color, (2, 2, cene - 4, bene - 4))
 
@@ -504,7 +511,7 @@ def update(tiles):
                 character_blit(name, _memory["surface_in"])
 
             _memory["surface"].fill(color)
-            _memory["surface"].blit(image_.lightCursor, (x_result, y_result) - np.array(lightCursor_size) // 2)
+            _memory["surface"].blit(IMAGES.lightCursor, (x_result, y_result) - np.array(lightCursor_size) // 2)
             _memory["surface"].blit(_memory["surface_in"], (3, 3))
         # --------------------------------------------------------------------------------------------------------
 
@@ -515,72 +522,77 @@ def update(tiles):
             return _memory["surface"], _memory["coords"]
 
     @classmethod
-    def text(
-        cls, text: str, scale: int, coords: tuple or list, color: tuple or list, win_name: str, font: str = "arial"
-    ) -> None:
-        """
-        This function allows to write text in the window.
+    def text(cls, text: str, scale: int, coords: tuple, color: tuple, win_name: str, font: str = "arial") -> None:
 
-        Examples of the Parameters;
-        ---------------------------
-        >>> text = "Hello World"
-        >>> scale = 13
-        >>> coords = (1, 2) #x and y coordinates
-        >>> color = (255, 255, 255) #Red, Green, Blue values
-        >>> win_name = "scuzz"
-        >>> font = "times new roman"
-        """
+        # --- 1. Ensure window exists ---
+        if win_name not in cls.memory:
+            raise KeyError(f"{win_name} not found. You must set {win_name} first.")
 
-        try:
-            cls.memory[win_name]
-        except KeyError:
-            raise KeyError(f"{win_name} not found. You must set {win_name} first.") from None
+        mem = cls.memory[win_name]["text"]
 
-        if cls.memory[win_name]["text"]["name"] != text:
-            compeleted_text = {}
-            x_coor, y_coor = coords
+        # --- 2. If text is unchanged, do nothing ---
+        if mem["name"] == text:
+            return
 
-            if font.endswith("anim"):
-                anim = Animation(
-                    "../game_engine/ui/images/pixelFont_{}/latin_capital_letter_a".format(font.lower()),
-                    3,
-                    scale,
-                    stop_iteration=True,
-                )
-                raw_text = [*text]
-                for index in range(len(raw_text)):
-                    letter = raw_text[index]
+        # --- 3. Prepare new text surfaces ---
+        completed = {}
+        x, y = coords
 
-                    try:
-                        boolean = raw_text[index] != cls.memory[win_name]["text"]["name"][index]
-                    except IndexError:
-                        boolean = True
-                    if letter in [" ", "\n", "\t", "\r"]:
-                        boolean = False
+        # ============================================================
+        # CASE A: ANIMATED FONT
+        # ============================================================
+        if font.endswith("anim"):
+            raw = list(text)
 
-                    if boolean:
-                        path = "../game_engine/ui/images/pixelFont_{}/{}".format(
-                            font.lower(), name(letter).lower().replace(" ", "_")
-                        )
-                        anim = Animation(path, 3, scale, stop_iteration=True)
+            for i, letter in enumerate(raw):
 
-                        compeleted_text.update({(x_coor, y_coor): anim})
-                        x_coor += anim.image_size[0]
+                # Skip whitespace (no animation)
+                if letter in [" ", "\n", "\t", "\r"]:
+                    if letter == "\n":
+                        y += scale * 10
+                        x = coords[0]
+                    elif letter == "\t":
+                        x += scale * 20
                     else:
-                        if letter == "\n" or letter == "\r":
-                            x_coor = coords[0]
-                            y_coor += (anim.image_size[1] // 2) * scale
-                        elif letter == "\t":
-                            x_coor += anim.image_size[0] * scale * 2
-                        else:
-                            x_coor += anim.image_size[0]
-            else:
-                lines = text.split("\n")
-                for line in lines:
-                    font_ = pygame.font.SysFont(font, scale)
-                    surface = font_.render(line, 1, color)
-                    compeleted_text.update({(x_coor, y_coor): surface})
-                    y_coor += surface.get_height()
+                        x += scale * 5
+                    continue
 
-            cls.memory[win_name]["text"]["name"] = text
-            cls.memory[win_name]["text"]["images"]["not_clickables"].update(compeleted_text)
+                # Cache key
+                key = (font, scale, letter)
+
+                # Load animation only once
+                if key not in _ANIM_CACHE:
+                    path = f"../game_engine/ui/images/pixelFont_{font.lower()}/{name(letter).lower().replace(' ', '_')}"
+                    _ANIM_CACHE[key] = Animation(path, 3, scale, stop_iteration=True)
+
+                anim = _ANIM_CACHE[key]
+                completed[(x, y)] = anim
+                x += anim.image_size[0]
+
+        # ============================================================
+        # CASE B: NORMAL FONT
+        # ============================================================
+        else:
+            # Cache key for entire text block
+            cache_key = (text, scale, font, color)
+
+            if cache_key in _TEXT_SURFACE_CACHE:
+                # Use cached surfaces
+                completed = _TEXT_SURFACE_CACHE[cache_key]
+            else:
+                # Build new surfaces
+                completed = {}
+                lines = text.split("\n")
+                font_obj = get_font(font, scale)
+
+                for line in lines:
+                    surf = font_obj.render(line, True, color)
+                    completed[(x, y)] = surf
+                    y += surf.get_height()
+
+                # Store in cache
+                _TEXT_SURFACE_CACHE[cache_key] = completed
+
+        # --- 4. Update memory ---
+        mem["name"] = text
+        mem["images"]["not_clickables"] = completed

@@ -2,12 +2,19 @@ import json
 import time
 
 import pygame
-import repackage
 
-repackage.up()
-from event import pygame_  # noqa: F401
-from items.info import ITEMS
-from package import Animation, Camera, Light, Physic  # noqa: F401
+from ..event import pygame_  # noqa: F401
+from ..package import Animation, Camera, Light, Physic  # noqa: F401
+
+# from event import pygame_  # noqa: F401
+# from items.info import ITEMS
+# from package import Animation, Camera, Light, Physic  # noqa: F401
+
+
+try:
+    from items.info import ITEMS
+except (ImportError, ModuleNotFoundError):
+    ITEMS = {}
 
 attributeMemory = {}
 

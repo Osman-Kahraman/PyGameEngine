@@ -2,10 +2,8 @@ from collections import namedtuple
 from typing import overload
 
 import pygame
-import repackage
-from core.animation import Animation
 
-repackage.up()
+from .animation import Animation
 
 pygame.init()
 
