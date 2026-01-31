@@ -1,6 +1,9 @@
 # Contributing to PyGameEngine
 
-Thank you for your interest in contributing! This guide will help you get started.
+Thank you for your interest in contributing! This guide will help you get started. 
+
+⚠️ IMPORTANT  
+**Please use code formatting before every commit — otherwise, the pipeline will fail.**
 
 ## Code Formatting
 
@@ -16,17 +19,11 @@ This project uses Black, isort, and Ruff to maintain consistent code style and q
 
 ---
 
-### Format a specific directory
+### Black Formatting
 If you are working only on the engine code, you can format just that folder:
 
 ```bash
 python3 -m black game_engine/
-```
-
-### Format a single file
-
-```bash
-python3 -m black game_engine/ui.py
 ```
 
 ## Import Sorting
