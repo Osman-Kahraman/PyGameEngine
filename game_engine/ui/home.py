@@ -39,10 +39,17 @@ class Window:
         try:
             with open(f"{ROOT_DIR}/history.json", "r") as json_file:
                 self.history = json.loads(json_file.read())
-        except FileNotFoundError:
+        #except FileNotFoundError:
+        except (FileNotFoundError, json.JSONDecodeError):
+            # couldn't find file or it's empty, creating a new one
+            self.history = {"prev_folders": []}
             # couldn't find file creating a new one
             with open(f"{ROOT_DIR}/history.json", "w") as json_file:
-                json.dump({}, json_file)
+                #json.dump({}, json_file)
+                json.dump(self.history, json_file)
+
+        if "prev_folders" not in self.history:
+            self.history["prev_folders"] = []
         # -----------------------------------------------------------------------------------
 
     def update(self):
@@ -165,6 +172,8 @@ class Window:
 
                         if current_dir != target_dir:
                             os.chdir(target_dir)
+                            if os.getcwd() not in sys.path:
+                                sys.path.insert(0, os.getcwd())
 
                         self.command = "game_start"
                 elif top_navbar_action_surf.item_coords == (2, 43):
@@ -186,6 +195,8 @@ class Window:
 
                 if current_dir != target_dir:
                     os.chdir(target_dir)
+                    if os.getcwd() not in sys.path:
+                        sys.path.insert(0, os.getcwd())
 
                 self.command = "game_start"
 
