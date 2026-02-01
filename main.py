@@ -3,13 +3,14 @@ import pygame
 timer = pygame.time.Clock()
 SURFACE_SIZE = (1366, 768)
 ASPECT_RATIO = 16 / 9
-screen = pygame.display.set_mode(SURFACE_SIZE, pygame.RESIZABLE) # pygame.FULLSCREEN
+FPS_LIMIT = 60
+screen = pygame.display.set_mode(SURFACE_SIZE, pygame.RESIZABLE)
 pygame.display.set_caption("PyGameEngine")
 pygame.mouse.set_visible(False)
 
 render_surface = pygame.Surface(SURFACE_SIZE).convert()
 
-# Center and scale the render surface within the window while maintaining the aspect ratoi.
+# Center and scale the render surface within the window while maintaining the aspect ratio.
 def blit_scale_screen():
     win_w, win_h = screen.get_size()
     target_w = win_w
@@ -23,7 +24,14 @@ def blit_scale_screen():
     screen.fill((0, 0, 0))
     screen.blit(scaled, (w, h))
 
+# Gets current FPS and renders on screen.
+def blit_fps_counter():
+    fps_counter_surf, fps_counter_coor = UI.window("fps_counter", (0, SURFACE_SIZE[1] - 25), (80, 25), (0, 0, 0), 3)
+    UI.text(f"FPS[{timer.get_fps() :.0f}]", 30, (0, 0), (255, 0, 0), win_name="fps_counter", font="segoescript")
+    screen.blit(fps_counter_surf, fps_counter_coor)
+
 from game_engine.ui import designer, game, home
+from game_engine.package import UI
 
 home_ = home.Window(render_surface)
 game_ = None
@@ -61,9 +69,9 @@ while command:
         break
 
     blit_scale_screen()
+    blit_fps_counter()
     pygame.display.update()
 
-    timer.tick(60) # FPS Limit
-    print(f"fps[{timer.get_fps() :.0f}]")
+    timer.tick(FPS_LIMIT)
 
 pygame.quit()
