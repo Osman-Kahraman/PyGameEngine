@@ -76,13 +76,13 @@ PyGameEngine/
 │   │   ├── game.py             # Core gameplay state & loop control
 │   │   └── home.py             # Home / menu screen logic  
 │   │
-│   ├── main.py                 # Project entry point
 │   ├── package.py              # Engine motors initializer
 │   ├── event.py                # Centralized event handling
 │   ├── game_state.py           # Global variable holder
 │   ├── history.json            # Stores previously opened game project paths for quick access and recent projects
 │   └── news.txt                # Engine notes / dev logs
 │
+├── main.py                     # Project entry point
 ├── CONTRIBUTION.md             # Project documentation for contributors
 ├── README.md                   # Project documentation
 ├── requirements.txt            # Python dependencies
@@ -98,5 +98,5 @@ After the installation of required libraries,
 Run this project using this command:
 
 ```sh
-python3 game_engine/main.py
+python3 main.py
 ```
