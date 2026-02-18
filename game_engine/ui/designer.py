@@ -776,7 +776,7 @@ Animation Amount: {}""".format(
             coords[0] += self.objectSize[0] * self.win_scale
 
             scrollbar_area = "{}_scrollbar_area".format(self.objectName)
-            light_editor_surf, light_editor_coor = UI.window("light_editor", coords, (230, 170), (30, 30, 30), 2)
+            light_editor_surf, light_editor_coor = UI.window("light_editor", coords, (230, 220), (30, 30, 30), 2)
             UI.window("light_editor_close_button", (5, 5), (20, 20), (0, 30, 5), "button", win_name="light_editor")
             UI.add_images({(0, 0): IMAGES.closeButton}, "light_editor_close_button")
             UI.window(scrollbar_area, (5, 25), (200, 120), (30, 30, 30), text_bool=False, win_name="light_editor")
@@ -787,8 +787,11 @@ Animation Amount: {}""".format(
             R = UI.listen("R")
             G = UI.listen("G")
             B = UI.listen("B")
+            UI.window("light_editor_save_button", (45, 145), (130, 40), (110, 110, 110), "button", win_name="light_editor")
+            UI.text("SAVE", 25, (5, 5), (200, 200, 200), "light_editor_save_button", font="impact")
+            
 
-            color_view = pygame.Surface((50, 100))
+            color_view = pygame.Surface((40, 100))
             color_view.fill((R, G, B))
             UI.add_images({(10, 10): color_view}, scrollbar_area)
 
