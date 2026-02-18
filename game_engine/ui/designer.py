@@ -788,7 +788,7 @@ Animation Amount: {}""".format(
             G = UI.listen("G")
             B = UI.listen("B")
             UI.window("light_editor_save_button", (45, 145), (130, 40), (110, 110, 110), "button", win_name="light_editor")
-            UI.text("SAVE", 25, (5, 5), (200, 200, 200), "light_editor_save_button", font="impact")
+            UI.text("SAVE", 25, (35, 5), (200, 200, 200), "light_editor_save_button", font="impact")
             
 
             color_view = pygame.Surface((40, 100))
