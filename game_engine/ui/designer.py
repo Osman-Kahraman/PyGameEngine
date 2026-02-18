@@ -287,11 +287,9 @@ class Window:
 
         os.makedirs(f"{publish_dest}/ui/images", exist_ok=True)
         with open(f"{publish_dest}/ui/images/init.py", "w", encoding="utf-8") as file:
-            file.write(
-                """
+            file.write("""
 class image_:
-    pass"""
-            )
+    pass""")
 
         os.makedirs(f"{publish_dest}/game_engine/items", exist_ok=True)
         shutil.copy("../game_engine/items/template.py", f"{publish_dest}/game_engine/items")
@@ -300,8 +298,7 @@ class image_:
         shutil.copy("../game_engine/ui/images/light.png", f"{publish_dest}/game_engine/images")
 
         with open(f"{publish_dest}/main.py", "w", encoding="utf-8") as file:
-            file.write(
-                """
+            file.write("""
 import pygame
 
 timer = pygame.time.Clock()
@@ -326,8 +323,7 @@ while command:
 
     timer.tick(60) #FPS Limit
 
-pygame.quit()"""
-            )
+pygame.quit()""")
 
     # -Display----------------------------------------------------------------------------------------------
     def update(self):
@@ -787,9 +783,10 @@ Animation Amount: {}""".format(
             R = UI.listen("R")
             G = UI.listen("G")
             B = UI.listen("B")
-            UI.window("light_editor_save_button", (45, 145), (130, 40), (110, 110, 110), "button", win_name="light_editor")
+            UI.window(
+                "light_editor_save_button", (45, 145), (130, 40), (110, 110, 110), "button", win_name="light_editor"
+            )
             UI.text("SAVE", 25, (35, 5), (200, 200, 200), "light_editor_save_button", font="impact")
-            
 
             color_view = pygame.Surface((40, 100))
             color_view.fill((R, G, B))
@@ -798,17 +795,22 @@ Animation Amount: {}""".format(
             try:
                 self.screen.blit(light_editor_surf, light_editor_coor)
             except TypeError:  # It will trigger when one of the buttons clicked.
-                with open("items/info.json", "r") as json_file:
-                    data = json.loads(json_file.read())
+                if light_editor_surf.item_coords == (45, 145):
+                    print("save_button clicked")
 
-                    data[self.objectName]["lights"].update(
-                        {"coords": [0, 0], "size": 100, "RGB": (int(R), int(G), int(B))}
-                    )
+                elif light_editor_surf.item_coords == (5, 5):
+                    print("close_button clicked")
+                # with open("items/info.json", "r") as json_file:
+                #     data = json.loads(json_file.read())
 
-                    with open("items/info.json", "w") as json_file_w:
-                        json.dump(data, json_file_w)
+                #     data[self.objectName]["lights"].update(
+                #         {"coords": [0, 0], "size": 100, "RGB": (int(R), int(G), int(B))}
+                #     )
 
-                self.light_editor_bool = False
+                #     with open("items/info.json", "w") as json_file_w:
+                #         json.dump(data, json_file_w)
+
+                # self.light_editor_bool = False
         # ------------------------------------------------------------------------------------------------------------
 
         # -Tileset Prelooking in the Tools Window---------------------------------------------------------------------
