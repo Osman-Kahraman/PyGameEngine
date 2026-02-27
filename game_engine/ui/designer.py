@@ -287,9 +287,11 @@ class Window:
 
         os.makedirs(f"{publish_dest}/ui/images", exist_ok=True)
         with open(f"{publish_dest}/ui/images/init.py", "w", encoding="utf-8") as file:
-            file.write("""
+            file.write(
+                """
 class image_:
-    pass""")
+    pass"""
+            )
 
         os.makedirs(f"{publish_dest}/game_engine/items", exist_ok=True)
         shutil.copy("../game_engine/items/template.py", f"{publish_dest}/game_engine/items")
@@ -298,7 +300,8 @@ class image_:
         shutil.copy("../game_engine/ui/images/light.png", f"{publish_dest}/game_engine/images")
 
         with open(f"{publish_dest}/main.py", "w", encoding="utf-8") as file:
-            file.write("""
+            file.write(
+                """
 import pygame
 
 timer = pygame.time.Clock()
@@ -323,7 +326,8 @@ while command:
 
     timer.tick(60) #FPS Limit
 
-pygame.quit()""")
+pygame.quit()"""
+            )
 
     # -Display----------------------------------------------------------------------------------------------
     def update(self):
@@ -395,14 +399,12 @@ pygame.quit()""")
                         self.rects.append(self.cursor_pos)
                     else:
                         if cursor_interaction:
-                            keys_to_delete = []
-                            for key in UI.memory:
+                            memory_copy = UI.memory.copy()
+                            for key in memory_copy.keys():
                                 if key.endswith("_anim_folders") or key.endswith("_anim_frames"):
-                                    keys_to_delete.append(key)
-                            for key in keys_to_delete:
-                                del UI.memory[key]
+                                    UI.memory.pop(key)
                             if "animator" in UI.memory:
-                                del UI.memory["animator"]
+                                UI.memory.pop("animator")
                             self.unconverted_objectCoords = cursor_interaction.item_coords
                             self.objectCoords = self.converter(self.unconverted_objectCoords)
                             self.objectName = self.tile_dict_RAW[str(self.layer)]["layers"][str(self.objectCoords)][:-4]
