@@ -399,6 +399,12 @@ pygame.quit()"""
                         self.rects.append(self.cursor_pos)
                     else:
                         if cursor_interaction:
+                            memory_copy = UI.memory.copy()
+                            for key in memory_copy.keys():
+                                if key.endswith("_anim_folders") or key.endswith("_anim_frames"):
+                                    UI.memory.pop(key)
+                            if "animator" in UI.memory:
+                                UI.memory.pop("animator")
                             self.unconverted_objectCoords = cursor_interaction.item_coords
                             self.objectCoords = self.converter(self.unconverted_objectCoords)
                             self.objectName = self.tile_dict_RAW[str(self.layer)]["layers"][str(self.objectCoords)][:-4]
