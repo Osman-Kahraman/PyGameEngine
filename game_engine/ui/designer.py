@@ -770,6 +770,14 @@ Animation Amount: {}""".format(
         elif self.light_editor_bool:
             coords = list(self.unconverted_objectCoords)
             coords[0] += self.objectSize[0] * self.win_scale
+            R_initial, G_initial, B_initial = 0,0,0
+
+            with open("items/info.json", "r") as json_file:
+                data = json.loads(json_file.read())
+                light = data[self.objectName]["lights"]   
+
+            if light:
+                R_initial, G_initial, B_initial = light['RGB']
 
             scrollbar_area = "{}_scrollbar_area".format(self.objectName)
             light_editor_surf, light_editor_coor = UI.window("light_editor", coords, (230, 220), (30, 30, 30), 2)
@@ -797,20 +805,30 @@ Animation Amount: {}""".format(
             except TypeError:  # It will trigger when one of the buttons clicked.
                 if light_editor_surf.item_coords == (45, 145):
                     print("save_button clicked")
+                    
+                    light.update(
+                        {"coords": [0, 0], "size": 100, "RGB": (int(R), int(G), int(B))}
+                    )
+                    R_initial, G_initial, B_initial = int(R), int(G), int(B)
+
+                    with open("items/info.json", "w") as json_file_w:
+                        json.dump(data, json_file_w)
+
 
                 elif light_editor_surf.item_coords == (5, 5):
                     print("close_button clicked")
-                # with open("items/info.json", "r") as json_file:
-                #     data = json.loads(json_file.read())
+                    if(R == R_initial and B == B_initial and G == G_initial):
+                        self.light_editor_bool = False
+                    else: 
+                        print("not saved")
+                        self.light_editor_bool = False
 
-                #     data[self.objectName]["lights"].update(
-                #         {"coords": [0, 0], "size": 100, "RGB": (int(R), int(G), int(B))}
-                #     )
 
-                #     with open("items/info.json", "w") as json_file_w:
-                #         json.dump(data, json_file_w)
 
-                # self.light_editor_bool = False
+                    
+
+
+            
         # ------------------------------------------------------------------------------------------------------------
 
         # -Tileset Prelooking in the Tools Window---------------------------------------------------------------------
