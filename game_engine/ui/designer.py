@@ -46,6 +46,7 @@ class Window:
         self.code_editor_bool = False
         self.animator_bool = False
         self.light_editor_bool = False
+        self.light_editor_prompt_bool = False
         self.cursor_bool = False
         self.drag_and_dropping_bool = False
 
@@ -770,14 +771,14 @@ Animation Amount: {}""".format(
         elif self.light_editor_bool:
             coords = list(self.unconverted_objectCoords)
             coords[0] += self.objectSize[0] * self.win_scale
-            R_initial, G_initial, B_initial = 0,0,0
+            R_initial, G_initial, B_initial = 0, 0, 0
 
             with open("items/info.json", "r") as json_file:
                 data = json.loads(json_file.read())
-                light = data[self.objectName]["lights"]   
+                light = data[self.objectName]["lights"]
 
             if light:
-                R_initial, G_initial, B_initial = light['RGB']
+                R_initial, G_initial, B_initial = light["RGB"]
 
             scrollbar_area = "{}_scrollbar_area".format(self.objectName)
             light_editor_surf, light_editor_coor = UI.window("light_editor", coords, (230, 220), (30, 30, 30), 2)
@@ -794,7 +795,7 @@ Animation Amount: {}""".format(
             UI.window(
                 "light_editor_save_button", (45, 145), (130, 40), (110, 110, 110), "button", win_name="light_editor"
             )
-            UI.text("SAVE", 25, (35, 5), (200, 200, 200), "light_editor_save_button", font="impact")
+            UI.text("SAVE", 25, (32, 5), (200, 200, 200), "light_editor_save_button", font="impact")
 
             color_view = pygame.Surface((40, 100))
             color_view.fill((R, G, B))
@@ -805,30 +806,80 @@ Animation Amount: {}""".format(
             except TypeError:  # It will trigger when one of the buttons clicked.
                 if light_editor_surf.item_coords == (45, 145):
                     print("save_button clicked")
-                    
-                    light.update(
-                        {"coords": [0, 0], "size": 100, "RGB": (int(R), int(G), int(B))}
-                    )
+
+                    light.update({"coords": [0, 0], "size": 100, "RGB": (int(R), int(G), int(B))})
                     R_initial, G_initial, B_initial = int(R), int(G), int(B)
 
                     with open("items/info.json", "w") as json_file_w:
                         json.dump(data, json_file_w)
 
-
                 elif light_editor_surf.item_coords == (5, 5):
                     print("close_button clicked")
-                    if(R == R_initial and B == B_initial and G == G_initial):
+                    if R == R_initial and B == B_initial and G == G_initial:
                         self.light_editor_bool = False
-                    else: 
-                        print("not saved")
+                    else:
+                        self.light_editor_prompt_bool = True
+
+            if self.light_editor_prompt_bool:
+                light_editor_prompt_surf, light_editor_prompt_coor = UI.window(
+                    "light_editor_prompt", coords, (400, 200), (30, 30, 30), 2
+                )
+                UI.text(
+                    "Are you sure you want to leave\n              without saving ?",
+                    25,
+                    (20, 50),
+                    (200, 200, 200),
+                    "light_editor_prompt",
+                )
+                UI.window(
+                    "light_editor_prompt_discard_button",
+                    (20, 135),
+                    (110, 40),
+                    (110, 110, 110),
+                    "button",
+                    win_name="light_editor_prompt",
+                )
+                UI.text("DISCARD", 25, (10, 5), (200, 200, 200), "light_editor_prompt_discard_button", font="impact")
+                UI.window(
+                    "light_editor_prompt_cancel_button",
+                    (140, 135),
+                    (110, 40),
+                    (110, 110, 110),
+                    "button",
+                    win_name="light_editor_prompt",
+                )
+                UI.text("CANCEL", 25, (17, 5), (200, 200, 200), "light_editor_prompt_cancel_button", font="impact")
+                UI.window(
+                    "light_editor_prompt_save_button",
+                    (260, 135),
+                    (110, 40),
+                    (110, 110, 110),
+                    "button",
+                    win_name="light_editor_prompt",
+                )
+                UI.text("SAVE", 25, (32, 5), (200, 200, 200), "light_editor_prompt_save_button", font="impact")
+
+                try:
+                    self.screen.blit(light_editor_prompt_surf, light_editor_prompt_coor)
+                except TypeError:  # It will trigger when one of the buttons clicked.
+                    if light_editor_prompt_surf.item_coords == (20, 135):
+                        print("data discard")
                         self.light_editor_bool = False
+                        self.light_editor_prompt_bool = False
+                    elif light_editor_prompt_surf.item_coords == (140, 135):
+                        print("cancel")
+                        self.light_editor_prompt_bool = False
+                    elif light_editor_prompt_surf.item_coords == (260, 135):
+                        print("save_button clicked")
+                        light.update({"coords": [0, 0], "size": 100, "RGB": (int(R), int(G), int(B))})
+                        R_initial, G_initial, B_initial = int(R), int(G), int(B)
 
+                        with open("items/info.json", "w") as json_file_w:
+                            json.dump(data, json_file_w)
 
+                        self.light_editor_bool = False
+                        self.light_editor_prompt_bool = False
 
-                    
-
-
-            
         # ------------------------------------------------------------------------------------------------------------
 
         # -Tileset Prelooking in the Tools Window---------------------------------------------------------------------
