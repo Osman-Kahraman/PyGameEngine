@@ -53,7 +53,9 @@ class Window:
         self.animation_command = "pause"
 
         self.cursor = IMAGES.normalCursor
-        self.cursor_pos = np.array(self.screen.get_size()) // 2
+        self.cursor_pos = (0, 0)
+
+        self.middle_coord = np.array(self.screen.get_size()) // 2
 
         self.animation_ = Animation("../game_engine/ui/images/animationTimer", 1, 6)
 
@@ -288,9 +290,11 @@ class Window:
 
         os.makedirs(f"{publish_dest}/ui/images", exist_ok=True)
         with open(f"{publish_dest}/ui/images/init.py", "w", encoding="utf-8") as file:
-            file.write("""
+            file.write(
+                """
 class image_:
-    pass""")
+    pass"""
+            )
 
         os.makedirs(f"{publish_dest}/game_engine/items", exist_ok=True)
         shutil.copy("../game_engine/items/template.py", f"{publish_dest}/game_engine/items")
@@ -299,7 +303,8 @@ class image_:
         shutil.copy("../game_engine/ui/images/light.png", f"{publish_dest}/game_engine/images")
 
         with open(f"{publish_dest}/main.py", "w", encoding="utf-8") as file:
-            file.write("""
+            file.write(
+                """
 import pygame
 
 timer = pygame.time.Clock()
@@ -324,7 +329,8 @@ while command:
 
     timer.tick(60) #FPS Limit
 
-pygame.quit()""")
+pygame.quit()"""
+            )
 
     # -Display----------------------------------------------------------------------------------------------
     def update(self):
@@ -812,8 +818,6 @@ Animation Amount: {}""".format(
             except TypeError:  # It will trigger when one of the buttons clicked.
                 if not self.light_editor_prompt_bool:
                     if light_editor_surf.item_coords == (45, 145):
-                        print("save_button clicked")
-
                         light.update({"coords": [0, 0], "size": 100, "RGB": (int(R), int(G), int(B))})
                         R_initial, G_initial, B_initial = int(R), int(G), int(B)
 
@@ -821,15 +825,16 @@ Animation Amount: {}""".format(
                             json.dump(data, json_file_w)
 
                     elif light_editor_surf.item_coords == (5, 5):
-                        print("close_button clicked")
                         if R == R_initial and B == B_initial and G == G_initial:
                             self.light_editor_bool = False
                         else:
                             self.light_editor_prompt_bool = True
 
             if self.light_editor_prompt_bool:
-                prompt_coords = list(coords)
-                prompt_coords[1] += self.objectSize[0] * self.win_scale
+                prompt_coords = (
+                    self.middle_coord[0] - 200,
+                    self.middle_coord[1] - 100,
+                )  # It will appear on middle of the screen
                 light_editor_prompt_surf, light_editor_prompt_coor = UI.window(
                     "light_editor_prompt", prompt_coords, (400, 200), (30, 30, 30), 2
                 )
@@ -872,14 +877,11 @@ Animation Amount: {}""".format(
                     self.screen.blit(light_editor_prompt_surf, light_editor_prompt_coor)
                 except TypeError:  # It will trigger when one of the buttons clicked.
                     if light_editor_prompt_surf.item_coords == (20, 135):
-                        print("data discard")
                         self.light_editor_bool = False
                         self.light_editor_prompt_bool = False
                     elif light_editor_prompt_surf.item_coords == (140, 135):
-                        print("cancel")
                         self.light_editor_prompt_bool = False
                     elif light_editor_prompt_surf.item_coords == (260, 135):
-                        print("save_button clicked")
                         light.update({"coords": [0, 0], "size": 100, "RGB": (int(R), int(G), int(B))})
                         R_initial, G_initial, B_initial = int(R), int(G), int(B)
 
