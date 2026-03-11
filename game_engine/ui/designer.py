@@ -821,8 +821,10 @@ Animation Amount: {}""".format(
                         self.light_editor_prompt_bool = True
 
             if self.light_editor_prompt_bool:
+                prompt_coords = list(coords)
+                prompt_coords[1] += self.objectSize[0] * self.win_scale
                 light_editor_prompt_surf, light_editor_prompt_coor = UI.window(
-                    "light_editor_prompt", coords, (400, 200), (30, 30, 30), 2
+                    "light_editor_prompt", prompt_coords, (400, 200), (30, 30, 30), 2
                 )
                 UI.text(
                     "Are you sure you want to leave\n              without saving ?",
