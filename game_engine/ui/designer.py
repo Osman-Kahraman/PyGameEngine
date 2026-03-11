@@ -804,21 +804,22 @@ Animation Amount: {}""".format(
             try:
                 self.screen.blit(light_editor_surf, light_editor_coor)
             except TypeError:  # It will trigger when one of the buttons clicked.
-                if light_editor_surf.item_coords == (45, 145):
-                    print("save_button clicked")
+                if not self.light_editor_prompt_bool:
+                    if light_editor_surf.item_coords == (45, 145):
+                        print("save_button clicked")
 
-                    light.update({"coords": [0, 0], "size": 100, "RGB": (int(R), int(G), int(B))})
-                    R_initial, G_initial, B_initial = int(R), int(G), int(B)
+                        light.update({"coords": [0, 0], "size": 100, "RGB": (int(R), int(G), int(B))})
+                        R_initial, G_initial, B_initial = int(R), int(G), int(B)
 
-                    with open("items/info.json", "w") as json_file_w:
-                        json.dump(data, json_file_w)
+                        with open("items/info.json", "w") as json_file_w:
+                            json.dump(data, json_file_w)
 
-                elif light_editor_surf.item_coords == (5, 5):
-                    print("close_button clicked")
-                    if R == R_initial and B == B_initial and G == G_initial:
-                        self.light_editor_bool = False
-                    else:
-                        self.light_editor_prompt_bool = True
+                    elif light_editor_surf.item_coords == (5, 5):
+                        print("close_button clicked")
+                        if R == R_initial and B == B_initial and G == G_initial:
+                            self.light_editor_bool = False
+                        else:
+                            self.light_editor_prompt_bool = True
 
             if self.light_editor_prompt_bool:
                 prompt_coords = list(coords)
