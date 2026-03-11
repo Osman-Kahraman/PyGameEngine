@@ -422,6 +422,12 @@ pygame.quit()"""
                                 self.objectHealth = 100  # Ayarlanacak
                                 self.objectScale = 1  # Ayarlanacak
                                 self.objectAnims = []
+                            # Reset RGB scrollbar state so stale values from
+                            # the previous item are not carried over.
+                            for _rgb_key in ("R", "G", "B"):
+                                if _rgb_key in UI.memory:
+                                    UI.memory[_rgb_key]["scroll"] = [0, 0]
+                                    UI.memory[_rgb_key]["condition"] = 0
                             self.tile_info_bool = True
                         else:
                             if event.pos[0] < self.screen.get_size()[0] - 200 or event.pos[1] > 350:
