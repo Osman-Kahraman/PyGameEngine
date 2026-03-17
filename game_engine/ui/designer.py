@@ -290,11 +290,9 @@ class Window:
 
         os.makedirs(f"{publish_dest}/ui/images", exist_ok=True)
         with open(f"{publish_dest}/ui/images/init.py", "w", encoding="utf-8") as file:
-            file.write(
-                """
+            file.write("""
 class image_:
-    pass"""
-            )
+    pass""")
 
         os.makedirs(f"{publish_dest}/game_engine/items", exist_ok=True)
         shutil.copy("../game_engine/items/template.py", f"{publish_dest}/game_engine/items")
@@ -303,8 +301,7 @@ class image_:
         shutil.copy("../game_engine/ui/images/light.png", f"{publish_dest}/game_engine/images")
 
         with open(f"{publish_dest}/main.py", "w", encoding="utf-8") as file:
-            file.write(
-                """
+            file.write("""
 import pygame
 
 timer = pygame.time.Clock()
@@ -329,8 +326,7 @@ while command:
 
     timer.tick(60) #FPS Limit
 
-pygame.quit()"""
-            )
+pygame.quit()""")
 
     # -Display----------------------------------------------------------------------------------------------
     def update(self):
@@ -805,10 +801,17 @@ Animation Amount: {}""".format(
             UI.window("G", (170, 80), (100, 20), (200, 200, 200), "scrollbar", win_name=scrollbar_area)
             UI.window("B", (170, 110), (100, 20), (200, 200, 200), "scrollbar", win_name=scrollbar_area)
             size = UI.listen("Size") * 5
-            R = UI.listen("R") * 255/100
-            G = UI.listen("G") * 255/100
-            B = UI.listen("B") * 255/100
-            UI.text(f"Size : {size}\n      R :  {int(R)}\n      G :  {int(G)}\n      B :  {int(B)}", 25, (70, 12), (200, 200, 200), scrollbar_area, font="impact")
+            R = UI.listen("R") * 255 / 100
+            G = UI.listen("G") * 255 / 100
+            B = UI.listen("B") * 255 / 100
+            UI.text(
+                f"Size : {size}\n      R :  {int(R)}\n      G :  {int(G)}\n      B :  {int(B)}",
+                25,
+                (70, 12),
+                (200, 200, 200),
+                scrollbar_area,
+                font="impact",
+            )
             UI.window(
                 "light_editor_save_button", (100, 175), (130, 40), (110, 110, 110), "button", win_name="light_editor"
             )
