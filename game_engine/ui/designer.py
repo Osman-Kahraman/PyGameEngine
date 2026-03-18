@@ -834,7 +834,7 @@ Animation Amount: {}""".format(
                             json.dump(data, json_file_w)
 
                     elif light_editor_surf.item_coords == (5, 5):
-                        if R == R_initial and B == B_initial and G == G_initial or size == size_initial:
+                        if R == R_initial and B == B_initial and G == G_initial and size == size_initial:
                             self.light_editor_bool = False
                         else:
                             self.light_editor_prompt_bool = True
