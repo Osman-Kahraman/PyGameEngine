@@ -290,9 +290,11 @@ class Window:
 
         os.makedirs(f"{publish_dest}/ui/images", exist_ok=True)
         with open(f"{publish_dest}/ui/images/init.py", "w", encoding="utf-8") as file:
-            file.write("""
+            file.write(
+                """
 class image_:
-    pass""")
+    pass"""
+            )
 
         os.makedirs(f"{publish_dest}/game_engine/items", exist_ok=True)
         shutil.copy("../game_engine/items/template.py", f"{publish_dest}/game_engine/items")
@@ -301,7 +303,8 @@ class image_:
         shutil.copy("../game_engine/ui/images/light.png", f"{publish_dest}/game_engine/images")
 
         with open(f"{publish_dest}/main.py", "w", encoding="utf-8") as file:
-            file.write("""
+            file.write(
+                """
 import pygame
 
 timer = pygame.time.Clock()
@@ -326,7 +329,8 @@ while command:
 
     timer.tick(60) #FPS Limit
 
-pygame.quit()""")
+pygame.quit()"""
+            )
 
     # -Display----------------------------------------------------------------------------------------------
     def update(self):
@@ -428,7 +432,7 @@ pygame.quit()""")
                                 if _rgb_key in UI.memory:
                                     UI.memory[_rgb_key]["scroll"] = [0, 0]
                                     UI.memory[_rgb_key]["condition"] = 0
-                            
+
                             self.tile_info_bool = True
                         else:
                             if event.pos[0] < self.screen.get_size()[0] - 200 or event.pos[1] > 350:
