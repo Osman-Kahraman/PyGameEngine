@@ -934,9 +934,7 @@ Animation Amount: {}""".format(
                 np.array(self.tools_dict[self.drag_and_dropping.item_coords]["image"].get_size()) * self.win_scale
             )
             scaled_img = pygame.transform.scale(img, scale_ratio)
-            coords = tuple(
-                np.array(self.cursor_pos) - (np.array(self.drag_and_dropping.item_collision_coords) * self.win_scale)
-            )
+            coords = self.cursor_pos
             self.screen.blit(scaled_img, coords)
         # ------------------------------------------------------------------------------------------------------------
 
