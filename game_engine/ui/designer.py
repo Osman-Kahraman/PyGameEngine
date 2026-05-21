@@ -395,7 +395,7 @@ pygame.quit()"""
                 if e_button == 1:
                     self.cursor = IMAGES.normalCursorL
 
-                    if self.tileset_choosing:
+                    if self.tileset_choosing and not cursor_interaction:
                         self.polygon_rects.append(self.cursor_pos)
                     elif self.is_hitbox_on:
                         self.rects = []
