@@ -32,8 +32,9 @@ class Light:
     `render`
     """
 
-    def __init__(self, size) -> None:
+    def __init__(self, size, light_color=(255, 255, 255)) -> None:
         self.width, self.height = size
+        self.light_color = light_color
         self.darkness = pygame.Surface(size, pygame.SRCALPHA)
         try:
             image = pygame.image.load("../game_engine/ui/images/light.png").convert_alpha()
@@ -232,6 +233,7 @@ class Light:
                 mask_surf = pygame.transform.smoothscale(small, (self.width, self.height))
 
             light_cut = self.light_image.copy()
+            light_cut.fill(self.light_color, special_flags=pygame.BLEND_RGBA_MULT)
             light_cut.blit(mask_surf, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
 
             self.darkness.fill((0, 0, 0, 0))
