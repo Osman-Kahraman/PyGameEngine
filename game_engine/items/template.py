@@ -167,8 +167,11 @@ class Temp:
                     pass
 
             if self.lights:
+                light_color = self.lights.get("RGB", (255, 255, 255))
                 if self.light_system is None:
-                    self.light_system = Light((self.lights["size"], self.lights["size"]))
+                    self.light_system = Light((self.lights["size"], self.lights["size"]), light_color)
+                else:
+                    self.light_system.light_color = light_color
 
                 l_c_x, l_c_y = self.lights["coords"]
                 size_mid = self.lights["size"] // 2
