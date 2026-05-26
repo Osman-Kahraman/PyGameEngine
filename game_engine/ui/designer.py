@@ -428,10 +428,10 @@ pygame.quit()"""
 
                             # Reset RGB scrollbar state so stale values from
                             # the previous item are not carried over.
-                            for _rgb_key in ("R", "G", "B"):
-                                if _rgb_key in UI.memory:
-                                    UI.memory[_rgb_key]["scroll"] = [0, 0]
-                                    UI.memory[_rgb_key]["condition"] = 0
+                            # for _rgb_key in ("R", "G", "B"):
+                                # if _rgb_key in UI.memory:
+                                    # UI.memory[_rgb_key]["scroll"] = [0, 0]
+                                    # UI.memory[_rgb_key]["condition"] = 0
 
                             self.tile_info_bool = True
                         else:
@@ -836,7 +836,7 @@ Animation Amount: {}""".format(
             except TypeError:  # It will trigger when one of the buttons clicked.
                 if not self.light_editor_prompt_bool:
                     if light_editor_surf.item_coords == (100, 175):
-                        light.update({"coords": [0, 0], "size": int(size), "RGB": (int(R), int(G), int(B))})
+                        light.update({"coords": [0, 0], "size": int(size), "RGB": [int(R), int(G), int(B)]})
                         R_initial, G_initial, B_initial = int(R), int(G), int(B)
                         size_initial = int(size)
 
@@ -901,7 +901,7 @@ Animation Amount: {}""".format(
                     elif light_editor_prompt_surf.item_coords == (140, 135):
                         self.light_editor_prompt_bool = False
                     elif light_editor_prompt_surf.item_coords == (260, 135):
-                        light.update({"coords": [0, 0], "size": int(size), "RGB": (int(R), int(G), int(B))})
+                        light.update({"coords": [0, 0], "size": int(size), "RGB": [int(R), int(G), int(B)]})
                         R_initial, G_initial, B_initial = int(R), int(G), int(B)
                         size_initial = int(size)
 
